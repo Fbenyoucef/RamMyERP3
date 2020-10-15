@@ -1,0 +1,36 @@
+﻿<div id="SignerRam" class="modal fade" role="dialog">
+
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content">
+
+            <div class="modal-header modal-colored-header bg-primary">
+
+                <h5 class="modal-title" data-translate="confirmer">Signature RAM</h5>
+
+            </div>
+
+            <div class="modal-body" id="modalBody">
+
+                @*<p style="margin-top: 10px;"
+                    data-translate="messageconfirmationretourperimetre">Etes vous certain de vouloir supprimer ce RAM ?</p>*@
+                <div class="mise-en-page">
+                    <div class="bloc-mise-en-page">
+                        @*<h2>Signer (<span id="btnSave">nettoyer</span>)</h2>*@
+                        <canvas id="canvas" name="SigCnv" style="border: solid;"></canvas>
+                        @*<canvas id=""></canvas>*@
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Non</button>
+
+                <a class="btn btn-primary waves-effect waves-light" data-translate="valider" id="btnSave">Signer</a>
+
+            </div>
+        </div>
+    </div>
+</div>

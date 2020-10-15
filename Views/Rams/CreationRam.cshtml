@@ -1,0 +1,72 @@
+﻿@model RamMyERP3.Models.Ram
+
+@{
+    var mode = ViewData["mode"];
+}
+
+<div>
+    <Naviguer fonction="Ajouter" breadcrumb1="Ram" breadcrumb2="Ajouter"></Naviguer>
+</div>
+
+<form id="Ajouter" asp-controller="Rams" asp-action="CreationRam">
+    @await Html.PartialAsync("_SignatureModal")
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @await Html.PartialAsync("_AjouterInfoRam", Model)
+
+    <div class="card">
+        <div class="card-body">
+            <h4 id="Header" class="card-subtitle mb-2 text-muted">Calendrier de présence/absence </h4>
+            <div class="table-responsive-lg" id="Details">
+                <br />
+            </div>
+        </div>
+    </div>
+
+</form>
+@section Styles {
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/assets/pages/data-table/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/assets/scss/style.css">
+}
+<style>
+    th {
+        display: table-cell;
+        vertical-align: inherit !important;
+        text-align: center;
+    }
+
+    #Header {
+        color: #01a9ac !important;
+    }
+</style>
+
+@section Scripts {
+
+    <!-- data-table js -->
+
+    <script src="~/files/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/jszip.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/pdfmake.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/vfs_fonts.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/files/assets/pages/data-table/extensions/fixed-colums/js/dataTables.fixedColumns.min.js"></script>
+    <script src="~/files/assets/pages/data-table/extensions/fixed-colums/js/fixed-column-custom.js"></script>
+    <script src="~/js/CustomData.js"></script>
+    <script src="~/js/CreateUpdate.js"></script>
+    <script src="~/js/Canvas.js"></script>
+
+    <script>
+        var exemple = document.getElementById('exemple');
+        var contexte = exemple.getContext('2d');
+        contexte.fillStyle = "rgba(0,0,255,0.5)";
+        contexte.fillRect(30, 30, 50, 50);
+    </script>
+}
+

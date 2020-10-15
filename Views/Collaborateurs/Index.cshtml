@@ -1,0 +1,71 @@
+﻿@model IEnumerable<RamMyERP3.Models.Collaborateur>
+
+@{
+    ViewData["Title"] = "Liste des collaborateurs";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@*<p>
+    <a asp-action="Create">Create New</a>
+</p>*@
+<table id="dataTable" class="table table-striped table-bordered nowrap">
+
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NOM)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PRENOM)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DATENAISSANCE)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NOM)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PRENOM)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DATENAISSANCE)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Styles {
+    <!-- Data Table Css -->
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/assets/pages/data-table/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css">
+}
+
+@section Scripts {
+    <!-- data-table js -->
+    <script src="~/files/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/jszip.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/pdfmake.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/vfs_fonts.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+    <!-- Custom js -->
+    <script src="~/files/assets/pages/data-table/js/data-table-custom.js"></script>
+}

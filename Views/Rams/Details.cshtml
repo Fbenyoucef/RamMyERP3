@@ -1,0 +1,258 @@
+﻿@model RamMyERP3.Models.Ram
+
+@using System.Globalization;
+@{
+    ViewData["Title"] = "Details";
+    int mois = @Model.MOIS;
+    int annee = @Model.ANNEE;
+    string anneeMois = annee.ToString() + '-' + mois.ToString().PadLeft(2, '0');
+    int NombreJours = DateTime.DaysInMonth(annee, mois);
+    var mode = ViewData["mode"];
+    var nbr = 1;
+    var nbr2 = 1;
+    double _Total = 0;
+
+}
+
+
+@*affichage des informations générales sur le ram*@
+<div>
+    <Naviguer fonction="Afficher" breadcrumb1="Ram" breadcrumb2="Afficher"></Naviguer>
+</div>
+<form asp-controller="Rams">
+    <input id="mode" hidden asp-for="@mode" />
+    @await Html.PartialAsync("_SignatureModal")
+
+    @await Html.PartialAsync("_AjouterInfoRam", Model)
+    <div class="card">
+        <div class="card-body">
+            <h4 id="Header" class="card-subtitle mb-2 text-muted">
+                Calendrier de présence/absence
+            </h4>
+
+            <div class="form-control">
+                <div class="table-responsive-lg">
+                    <table id="dataTable" class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">
+                                    Mission
+                                </th>
+                                @{
+                                    var ListeJours = new List<int>();
+                                }
+                                @while (nbr <= NombreJours)
+                                {
+                                    DateTime dateJours = new DateTime(annee, mois, nbr);
+                                    if (dateJours.DayOfWeek == DayOfWeek.Saturday || dateJours.DayOfWeek == DayOfWeek.Sunday)
+                                    {
+                                        nbr++;
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        <th>@dateJours.ToString("ddd").Substring(0, 1)</th>
+                                        ListeJours.Add(nbr);
+                                        nbr++;
+                                    }
+
+                                }
+                                <th rowspan="2">
+                                    Total
+                                </th>
+                            </tr>
+                            <tr>
+                                @{
+
+                                    @foreach (var item in ListeJours)
+                                    {
+                                        <th>@item</th>
+                                    }
+
+                                }
+                            </tr>
+
+
+
+                        </thead>
+                        <tbody>
+                            @*recuperation des informations relatives au ram et les afficher avec
+                                les valeurs du nombre d'heure travaillés par jours*@
+                            @foreach (var item in Model.DetailsAbsence)
+                            {
+                                //Affichage du nombre de jours travaillé par mission
+
+                                double _SousTotal = 0;
+                                <tr>
+
+                                    <td style="text-align: left">    @Html.DisplayFor(modelItem => item.Key)</td>
+
+                                    @foreach (var jours in ListeJours)
+                                    {
+                                        DateTime dateJours = new DateTime(annee, mois, jours);
+                                        bool find = false;
+                                        @foreach (var elt in item.Value)
+                                        {
+                                            var _tab = elt.Split('_');
+                                            if (int.Parse(_tab[0]) == jours)
+                                            {
+                                                _SousTotal += double.Parse(_tab[1]);
+
+                                                <td>
+                                                    @_tab[1]
+
+                                                </td>
+                                                find = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!find)
+                                        {
+                                            <td></td>
+                                        }
+
+                                    }
+                                    @{
+                                        _Total += _SousTotal;
+                                    }
+                                    @*nombre de jours total qui a été saisie (travail et absence)*@
+                                    <td>@_SousTotal</td>
+                                </tr>
+
+                            }
+                            @{
+                                nbr2 = ListeJours.Count + 1;
+                            }
+
+                            <tr>
+                                @*création des colone vide pour pouvoir inserer la cellule du Total de jours saisie*@
+                                @for (int i = 0; i < nbr2; i++)
+                                {
+                                    <td style="border:none"></td>
+                                }
+
+                                <td><strong> @_Total</strong></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</form>
+
+
+@section Styles {
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/assets/pages/data-table/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/assets/scss/style.css">
+}
+<style>
+    /* th {
+        // padding: 0px !important;
+        display: table-cell;
+        vertical-align: inherit !important;
+        text-align: center;
+    }*/
+    th {
+        padding: 0px !important;
+        display: table-cell;
+        vertical-align: inherit !important;
+        text-align: center;
+    }
+
+    td {
+        vertical-align: inherit;
+        text-align: center;
+        display: table-cell;
+        width: 0.31%;
+    }
+
+    #Header {
+        color: #01a9ac !important;
+    }
+</style>
+
+
+@section Scripts {
+
+    <!-- data-table js -->
+    <script src="~/files/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/jszip.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/pdfmake.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/vfs_fonts.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/js/CreateUpdate.js"></script>
+    <script src="~/js/Canvas.js"></script>
+    <script>
+        $(document).ready(function () {
+            //root = ("#Retour");
+            //root.attr('href', '/Rams/Lister');
+            var Id = document.getElementById("ID").value;
+            var link = document.getElementById("Retour");
+            link.setAttribute('href', "/Rams/Lister");
+
+            var link = document.getElementById("Modification");
+            link.setAttribute('href', "/Rams/Modifier/" + Id);
+
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(
+
+                {
+                    //"lengthChange": true,
+
+                    "responsive": false,
+
+                    "searching": true,
+
+                    "ordering": false,
+
+                    "stateSave": true,
+
+                    "fixedHeader": true,
+
+                    "select": true,
+                    "paging": false,
+                    "autoWidth": false,
+
+                    "language": {
+                        "search": "Recherche",
+                    }
+                });
+            //$(".DTFC_LeftBodyLiner table").attr('style', 'margin-top: -7px !important;margin-bottom: -7px !important;background: white;');
+            $(".dataTables_info").closest("div.row").remove();
+
+        });
+
+
+    </script>
+
+    @*<script>
+            $(document).ready(function () {
+                mode = $('#mode').val();
+                input = $('input');
+                if (mode == 'update') {
+                    input.prop('disabled', true);
+                }
+                else {
+                    $('#JOURS_TRAVAILLES').attr('value', '0.0');
+                    $('#JOURS_ABSENCE').attr('value', '0.0');
+                }
+
+            });
+        </script>*@
+    <!-- Custom js -->
+    @*<script src="~/files/assets/pages/data-table/js/data-table-custom.js"></script>*@
+}

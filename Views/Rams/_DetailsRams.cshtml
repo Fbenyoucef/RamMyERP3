@@ -1,0 +1,276 @@
+﻿@model RamMyERP3.Models.Ram
+
+@using System.Globalization;
+@{
+    ViewData["Title"] = "Details";
+    int mois = @Model.MOIS;
+    int annee = @Model.ANNEE;
+    int NombreJours = DateTime.DaysInMonth(annee, mois);
+    var nbr = 1;
+    var nbr2 = 1;
+
+}
+<div class="card">
+    <div class="card-body">
+
+        <h4 id="Header" class="card-subtitle mb-2 text-muted">Informations Ram </h4>
+
+        <div class="form-control">
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                            <label asp-for="collaborateur.NOM" class="control-label"></label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="col-sm-10">
+                                <input asp-for="collaborateur.NOM" class="form-control" disabled />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                            <label asp-for="JOURS_TRAVAILLES" class="control-label"></label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="col-sm-10">
+                                <input asp-for="JOURS_TRAVAILLES" class="form-control" disabled />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                            <label class="control-label">Mois/Année</label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="col-sm-10">
+                                <input asp-for="ANNEEMOIS" class="form-control" disabled />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                            <label asp-for="collaborateur.PRENOM" class="control-label"></label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="col-sm-10">
+                                <input asp-for="collaborateur.PRENOM" class="form-control" disabled />
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="form-group row">
+                            <div class="col-md-6">
+                                <i class="fa fa-user" aria-hidden="true"></i>
+                                <label asp-for="ANNEE" class="control-label"></label>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="col-sm-10">
+                                    <input value="@Model.MOIS/@Model.ANNEE" asp-for="ANNEE" class="form-control" disabled />
+                                </div>
+                            </div>
+                        </div>*@
+                    <div class="form-group row">
+                        <div class="col-md-6">
+                            <i class="fa fa-user" aria-hidden="true"></i>
+                            <label asp-for="JOURS_ABSENCE" class="control-label"></label>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="col-sm-10">
+                                <input asp-for="JOURS_ABSENCE" class="form-control" disabled />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <h4 id="Header" class="card-subtitle mb-2 text-muted">
+            Calendrier de présence/absence
+        </h4>
+
+        <div class="form-control">
+            <div class="table-responsive-lg">
+                <table id="dataTable" class="table table-striped table-bordered compact nowrap">
+                    <thead style="width:inherit">
+                        <tr>
+                            <th rowspan="2" class="mission">
+                                Mission
+                            </th>
+                            @{
+                                var ListeJours = new List<int>();
+                            }
+                            @while (nbr <= NombreJours)
+                            {
+                                DateTime dateJours = new DateTime(annee, mois, nbr);
+                                if (dateJours.DayOfWeek == DayOfWeek.Saturday || dateJours.DayOfWeek == DayOfWeek.Sunday)
+                                {
+                                    nbr++;
+                                    continue;
+                                }
+                                else
+                                {
+                                    <th>@dateJours.ToString("ddd").Substring(0, 1)</th>
+                                    ListeJours.Add(nbr);
+                                    nbr++;
+                                }
+
+                            }
+                        </tr>
+                        <tr>
+                            @{
+
+                                @foreach (var item in ListeJours)
+                                {
+                                    <th>@item</th>
+                                }
+
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.DetailsAbsence)
+                        {
+                            <tr>
+
+                                <td>    @Html.DisplayFor(modelItem => item.Key)</td>
+
+                                @foreach (var jours in ListeJours)
+                                {
+                                    DateTime dateJours = new DateTime(annee, mois, jours);
+                                    bool find = false;
+                                    @foreach (var elt in item.Value)
+                                    {
+                                        var _tab = elt.Split('_');
+                                        if (int.Parse(_tab[0]) == jours)
+                                        {
+                                            <td>
+                                                @_tab[1]
+                                            </td>
+                                            find = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!find)
+                                    {
+                                        <td></td>
+                                    }
+                                }
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+@section Styles {
+
+
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/assets/pages/data-table/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css">
+    <style>
+        .mission {
+            padding: 0px !important;
+            display: table-cell;
+            vertical-align: inherit !important;
+            text-align: center;
+        }
+
+        #Header {
+            color: #01a9ac !important;
+        }
+    </style>
+}
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable(
+                {
+
+                    "lengthChange": false,
+
+                    "responsive": false,
+
+                    "searching": true,
+
+                    "ordering": false,
+
+                    "stateSave": true,
+
+                    "fixedHeader": false,
+
+                    "select": true,
+
+                    "autoWidth": true,
+
+                    "lengthMenu": [[15, 30, 50, 100, -1], [15, 30, 50, 100, "Tout"]],
+                    "columnDefs": [{ "orderable": false, "targets": 0, "width": "auto" }],
+                    "pageLength": 15,
+                    "language": {
+                        "processing": "Traitement en cours...",
+                        "search": "Recherche",
+                        "lengthMenu": "Par page&thinsp; _MENU_ ",
+                        "info": "Affichage de l'&eacute;lement _START_ &agrave; _END_ sur _TOTAL_ &eacute;l&eacute;ments",
+                        "infoEmpty": "Affichage de l'&eacute;lement 0 &agrave; 0 sur 0 &eacute;l&eacute;ments",
+                        "infoFiltered": "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+                        "infoPostFix": "",
+                        "loadingRecords": "Chargement en cours...",
+                        "zeroRecords": "Aucun &eacute;l&eacute;ment &agrave; afficher",
+                        "emptyTable": "Aucune donnée disponible dans le tableau",
+                        "paginate": {
+
+                            "first": "Premier",
+
+                            "previous": "Pr&eacute;c&eacute;dent",
+
+                            "next": "Suivant",
+                            "last": "Dernier"
+                        },
+                        "aria": {
+                            "sortAscending": ": activer pour trier la colonne par ordre croissant",
+                            "sortDescending": ": activer pour trier la colonne par ordre décroissant"
+                        }
+                    }
+                });
+
+        });
+    </script>
+    <script>
+        var table = $('#dataTable').DataTable();
+        table.columns.adjust().draw();
+    </script>
+
+    <!-- data-table js -->
+    <script src="~/files/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/jszip.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/pdfmake.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/vfs_fonts.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+    <!-- Custom js -->
+    @*<script src="~/files/assets/pages/data-table/js/data-table-custom.js"></script>*@
+}

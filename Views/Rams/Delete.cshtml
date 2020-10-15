@@ -1,0 +1,16 @@
+﻿@model RamMyERP3.Models.Ram
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h3>Etes vous certains de vouloir supprimer ce RAM ?</h3>
+<br />
+<div>
+    @await Html.PartialAsync("_DetailsRams", Model)
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="ID" />
+        <input type="submit" value="Supprimer" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

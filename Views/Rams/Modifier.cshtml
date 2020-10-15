@@ -1,0 +1,368 @@
+﻿@model RamMyERP3.Models.Ram
+@{
+    ViewData["Title"] = "Edit";
+
+    int mois = @Model.MOIS;
+    int annee = @Model.ANNEE;
+    var mode = ViewData["mode"];
+    string anneeMois = annee.ToString() + '-' + mois.ToString().PadLeft(2, '0');
+    Model.ANNEEMOIS = anneeMois;
+    int NombreJours = DateTime.DaysInMonth(annee, mois);
+    var nbr = 1;
+}
+
+<form id="Modifier" asp-controller="Rams" asp-action="Modifier">
+    <div>
+        <Naviguer fonction="Modifier" breadcrumb1="Ram" breadcrumb2="Modifier"></Naviguer>
+    </div>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @await Html.PartialAsync("_AjouterInfoRam", Model)
+    <div class="card">
+        <div class="card-body">
+            <h4 id="Header" class="card-subtitle mb-2 text-muted">Calendrier de présence/absence </h4>
+            <div class="form-control">
+                <div class="table-responsive-lg">
+
+                    <table id="dataTable" class="table table-striped table-bordered">
+
+                        <thead>
+                            <tr>
+                                <th rowspan="2" id="mission">
+                                    Mission
+                                </th>
+                                @{
+                                    var ListeJours = new List<int>();
+                                }
+                                @while (nbr <= NombreJours)
+                                {
+                                    DateTime dateJours = new DateTime(annee, mois, nbr);
+                                    if (dateJours.DayOfWeek == DayOfWeek.Saturday || dateJours.DayOfWeek == DayOfWeek.Sunday)
+                                    {
+                                        nbr++;
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        <th>@dateJours.ToString("ddd").Substring(0, 1)</th>
+                                        ListeJours.Add(nbr);
+                                        nbr++;
+                                    }
+                                }
+                            </tr>
+                            <tr>
+                                @{
+                                    @foreach (var item in ListeJours)
+                                    {
+                                        <th>@item</th>
+                                    }
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var listeJours in Model.DetailsAbsence)
+                            {
+                                var _Dict = new Dictionary<int, float>();
+                                var firstPart = "";
+                                foreach (var item2 in listeJours.Value)
+                                {
+                                    var tab = item2.Split('_');
+                                    firstPart = tab[0] + "_" + tab[1];
+                                    if (tab[2] != " ")
+                                        _Dict.Add(int.Parse(tab[2]), float.Parse(tab[3]));
+                                }
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => listeJours.Key)</td>
+
+                                    @foreach (var jours in ListeJours)
+                                    {
+                                        <td class="Combo">
+                                            <select class="fa fa-check-circle text-dark iconstyle" name="tableauRam">
+                                                @{
+                                                    var heur = -1f;
+                                                    if (_Dict.ContainsKey(jours))
+                                                    {
+                                                        heur = _Dict[jours];
+                                                    }
+                                                    @for (int i = 0; i < 3; i++)
+                                                    {
+                                                        var name = firstPart + "_" + jours;
+                                                        var _content = i * 0.5f;
+                                                        var _index = name + "_" + _content;
+                                                        @if (heur == _content)
+                                                        {
+                                                            <option selected="" value="@_index">@_content</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@_index">@_content</option>
+                                                        }
+                                                    }
+                                                }
+
+                                            </select>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <input id="JoursTravailles" value="@ListeJours.Count()" hidden />
+                </div>
+                <br />
+            </div>
+        </div>
+    </div>
+
+</form>
+
+
+@section Styles {
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/assets/pages/data-table/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="~/files/assets/scss/style.css">
+
+    <style>
+        /*   th {
+            padding: 0px !important;
+            display: table-cell;
+            vertical-align: inherit !important;
+            text-align: center;
+        }*/
+        th {
+            display: table-cell;
+            vertical-align: inherit !important;
+            text-align: center;
+        }
+
+        #Header {
+            color: #01a9ac !important;
+        }
+    </style>
+}
+
+@section Scripts
+{
+
+    @*<script>
+            $(document).ready(function () {
+                $("#minimizeSynthese").on("click", function () {
+                    var $this = $(this);
+                    var port = $($this.parents('.card.syntheseContainer'));
+                    var card = $(port).children('.card-body').slideToggle();
+                    $(this).toggleClass("icon-minus").fadeIn('slow');
+                    $(this).toggleClass("icon-plus").fadeIn('slow');
+                })
+            });
+
+        </script>
+
+        <script>
+
+            $('#Ajout').on("click", function (event) {
+                var JoursTravailles = $('#JoursTravailles').val();
+                var Anneemois = $('#AnneeMois');
+
+                if (Anneemois.val() == "") {
+                    Anneemois.css("border-color", "Red");
+                    event.preventDefault();
+                    var message = "Merci de choisir le mois";
+                    $.notify({ message: message }, { type: "danger" });
+                }
+
+                var sum = 0.0;
+                var quantity = 0;
+                $('.Combo').each(function (i, value) {
+                    var td = $(value);
+                    var val = td.find("select").find("option:selected").text().replace(",", ".");
+                    let intval = parseFloat(val);
+                    sum += intval;
+                });
+                // alert("le total =" + sum);
+                $('#total').html(sum);
+                // $('#total_quantity').html(quantity);
+                if (sum < JoursTravailles) {
+                    event.preventDefault();
+                    var message = "Merci de remplir toutes les cellules du tableau, manque : " + (JoursTravailles - sum) + " jours";
+                    $.notify({ message: message }, { type: "danger" });
+                }
+                else {
+                    if (sum > JoursTravailles) {
+                        event.preventDefault();
+                        var message = "Merci de verifier votre saisie, trop de jours saisie : " + (sum - JoursTravailles) + " jours";
+                        $.notify({ message: message }, { type: "danger" });
+                    }
+                }
+
+            });
+
+        </script>
+        <script>
+            $(document).ready(function () {
+                mode = $('#mode').val();
+                input = $('input');
+                if (mode == 'update') {
+                    input.prop('disabled', true);
+                }
+                else {
+                    $('#JOURS_TRAVAILLES').attr('value', '0.0');
+                    $('#JOURS_ABSENCE').attr('value', '0.0');
+                }
+
+            });
+        </script>*@
+
+    <!-- data-table js -->
+    <script src="~/files/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/jszip.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/pdfmake.min.js"></script>
+    <script src="~/files/assets/pages/data-table/js/vfs_fonts.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/files/assets/pages/data-table/extensions/fixed-colums/js/dataTables.fixedColumns.min.js"></script>
+    <script src="~/files/assets/pages/data-table/extensions/fixed-colums/js/fixed-column-custom.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            $('#dataTable').DataTable(
+
+                {
+                    "lengthChange": false,
+
+                    "responsive": false,
+
+                    "searching": false,
+
+                    "ordering": false,
+
+                    "stateSave": true,
+
+                    "fixedHeader": false,
+
+                    "select": true,
+                    "paging": false,
+                    "autoWidth": true,
+                    columnDefs: [
+                        { width: 100, targets: 0 }],
+                    scrollX: true,
+                    fixedColumns: {
+                        leftColumns: 1,
+                        heightMatch: "auto"
+                    },
+
+                    "language": {
+                        "search": "Recherche",
+                    }
+
+                });
+
+            $(".DTFC_LeftBodyLiner table").attr('style', 'margin-top: -7px !important;margin-bottom: -7px !important;background: white;');
+            $(".dataTables_info").closest("div.row").remove();
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            //root = ("#Retour");
+            //root.attr('href', '/Rams/Lister');
+            //  var Id = document.getElementById("ID").value;
+            var link = document.getElementById("RetourDetail");
+            link.setAttribute('href', "/Rams/Lister");
+
+        });
+    </script>
+    <script src="~/js/CalculSomme.js"></script>
+    <script src="~/js/CreateUpdate.js"></script>
+    @*<script>
+            $(document).ready(function () {
+                $("#minimizeSynthese").on("click", function () {
+                    var $this = $(this);
+                    var port = $($this.parents('.card.syntheseContainer'));
+                    var card = $(port).children('.card-body').slideToggle();
+                    $(this).toggleClass("icon-minus").fadeIn('slow');
+                    $(this).toggleClass("icon-plus").fadeIn('slow');
+                });
+                SetMode();
+                function SetMode() {
+                    mode = $('.mode').val();
+                    input = $('input');
+                    if (mode == 'update') {
+                        input.prop('disabled', true);
+                    }
+                    else {
+                        $('#JOURS_TRAVAILLES').attr('value', '0.0');
+                        $('#JOURS_ABSENCE').attr('value', '0.0');
+                        $('#total').attr('value', '0.0');
+                    }
+                };
+
+            });
+
+
+        </script>*@
+    @*<script src="~/js/CreateUpdate.js"></script>*@
+    @*<script>
+            $(document).ready(function () {
+                $('#Modif').on("click", function (event) {
+                    var JoursTravailles = $('#JoursTravailles').val();
+                    var Anneemois = $('#AnneeMois');
+                    console.log("JoursTravailles " + JoursTravailles);
+                    if (Anneemois.val() == "") {
+                        Anneemois.css("border-color", "Red");
+                        event.preventDefault();
+                        var message = "Merci de choisir le mois";
+                        $.notify({ message: message }, { type: "danger" });
+                    }
+
+                    var sum = 0.0;
+                    var quantity = 0;
+                    $('.Combo').each(function (i, value) {
+                        var td = $(value);
+                        var val = td.find("select").find("option:selected").text().replace(",", ".");
+                        let intval = parseFloat(val);
+                        sum += intval;
+                    });
+                    console.log("total " + sum);
+                    // alert("le total =" + sum);
+                    $('#total').html(sum);
+                    // $('#total_quantity').html(quantity);
+                    if (sum < JoursTravailles) {
+                        event.preventDefault();
+                        var message = "Merci de remplir toutes les cellules du tableau, manque : " + (JoursTravailles - sum) + " jours";
+                        $.notify({ message: message }, { type: "danger" });
+                    }
+                    else {
+                        if (sum > JoursTravailles) {
+                            event.preventDefault();
+                            var message = "Merci de verifier votre saisie, trop de jours saisie : " + (sum - JoursTravailles) + " jours";
+                            $.notify({ message: message }, { type: "danger" });
+                        }
+                    }
+
+                });
+            });
+        </script>*@
+    @*<script>
+            $(document).ready(function () {
+
+                mode = $('.mode').val();
+                input = $('input');
+                if (mode == 'update') {
+                    input.prop('disabled', true);
+                }
+                else {
+                    $('#JOURS_TRAVAILLES').attr('value', '0.0');
+                    $('#JOURS_ABSENCE').attr('value', '0.0');
+                    $('#total').attr('value', '0.0');
+                }
+            });
+
+        </script>*@
+}
