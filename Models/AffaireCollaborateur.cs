@@ -9,7 +9,6 @@ namespace RamMyERP3.Models
     public class AffaireCollaborateur
     {
         public int ID { get; set; }
-        [Column("collaborateur_ID")]
         public int COLLABORATEURID { get; set; }
         public int AFFAIREID { get; set; }
         public Affaire affaire { get; set; }

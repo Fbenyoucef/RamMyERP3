@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using jsreport.AspNetCore;
+using jsreport.Binary;
+using jsreport.Local;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -38,7 +41,10 @@ namespace RamMyERP3
                                       builder.WithOrigins("https://localhost:5001");
                                   });
             });
-
+            services.AddJsReport(new LocalReporting()
+       .UseBinary(JsReportBinary.GetBinary())
+       .AsUtility()
+       .Create());
             //services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
             //.AddEntityFrameworkStores<IdentityUserDbContext>()
             //.AddDefaultTokenProviders();

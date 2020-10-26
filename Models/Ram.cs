@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace RamMyERP3.Models
 {
@@ -13,7 +15,6 @@ namespace RamMyERP3.Models
         public int ID { get; set; }
 
         [Display(Name = "Collaborateur")]
-
         public int collaborateurID { get; set; }
         [Display(Name = "Mois")]
         public int MOIS { get; set; }
@@ -42,13 +43,26 @@ namespace RamMyERP3.Models
         public ICollection<RamDetailsAbsence> ListeRamDetailsAbsence { get; set; }
         public ICollection<RamDetailsPresence> ListeRamDetailsPresence { get; set; }
         [NotMapped]
-        [Display(Name = "Annee-Mois")]
+        [Display(Name = "Année-Mois")]
         [Required(ErrorMessage = "Merci de saisir le mois")]
         public string ANNEEMOIS
         {
+            get
+            {
+                if (MOIS > 0 && ANNEE > 0)
+                    return ANNEE + "-" + MOIS;
+                else
+                    return " - ";
+            }
+            set
+            {
+                var tab = value.Split('-');
+                ANNEE = int.Parse(tab[0]);
+                MOIS = int.Parse(tab[1]);
+            }
             //(ANNEE.ToString() + "-" + MOIS.ToString().PadLeft(2, '0'))
             //new DateTime(ANNEE, MOIS, 0).GetDateTimeFormats("yyyy-MM");
-            get; set;/* => AnneeMois = value*/
+            //   get; set;/* => AnneeMois = value*/
 
         }
         [NotMapped]

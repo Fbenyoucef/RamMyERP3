@@ -11,12 +11,10 @@ namespace RamMyERP3.Models
         public int ID { get; set; }
         public DateTime DATE_DEBUT { get; set; }
         public string NOM { get; set; }
-
         public int CLIENTID { get; set; }
+        public Client CLIENT { get; set; }
         public int AFFAIRETYPEID { get; set; }
         public r_affaire_type AFFAIRETYPE { get; set; }
-        public Client client { get; set; }
-
         public ICollection<AffaireCollaborateur> listeAffaireCollaborateur { get; set; }
 
     }

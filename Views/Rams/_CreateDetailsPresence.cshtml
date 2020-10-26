@@ -6,14 +6,14 @@
     int annee = @Model.ANNEE; //int.Parse(_anneeMois[0]);
     int NombreJours = DateTime.DaysInMonth(annee, mois);
     var nbr = 1;
-    var nbr2 = 1;
+   // var nbr2 = 1;
 
 }
 
 @*<div class="row">*@
 
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-<label class="label text-danger">la somme saisie pour chaque colonne doit etre égale à 1 </label>
+
 <table id="dataTable" class="table table-striped table-bordered">
     <thead>
         <tr>
@@ -21,7 +21,7 @@
                 Mission
             </th>
             @{
-                var ListeJours = new List<int>();
+                var listeJours = new List<int>();
             }
 
             @*Création des colonnes avec le nombre de jours du mois à saisir*@
@@ -40,7 +40,7 @@
                 else
                 {
                     <th>@dateJours.ToString("ddd").Substring(0, 1)</th>
-                    ListeJours.Add(nbr);
+                    listeJours.Add(nbr);
                     nbr++;
                 }
 
@@ -49,7 +49,7 @@
         <tr>
             @{
 
-                @foreach (var item in ListeJours)
+                @foreach (var item in listeJours)
                 {
                     <th>@item</th>
                 }
@@ -64,12 +64,12 @@
                 d'heures travaillées *@
         @foreach (var item in Model.Details)
         {
-            nbr2 = 1;
+            
             <tr>
 
                 <td>@Html.DisplayFor(modelItem => item.Key)</td>
 
-                @foreach (var jours in ListeJours)
+                @foreach (var jours in listeJours)
 
                 {
                     <td class="Combo">
@@ -94,7 +94,7 @@
     </tbody>
 </table>
 
-<input id="JoursTravailles" value="@ListeJours.Count()" hidden />
+<input id="JoursTravailles" value="@listeJours.Count()" hidden />
 @*</div>*@
 
 

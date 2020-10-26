@@ -14,7 +14,7 @@ namespace RamMyERP3.Models
         public DateTime DATE_TRAVAILLE { get; set; }
         public int AffaireCollaborateurID { get; set; }
         [Column("nombreHeure")]
-        public double NOMBREHEURE { get; set; }
+        public double nombreHeure { get; set; }
         public AffaireCollaborateur affaireCollaborateur { get; set; }
         public Ram ram { get; set; }
     }

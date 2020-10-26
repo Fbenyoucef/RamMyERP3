@@ -22,10 +22,12 @@
 <form asp-controller="Rams">
     <input id="mode" hidden asp-for="@mode" />
     @await Html.PartialAsync("_SignatureModal")
-
     @await Html.PartialAsync("_AjouterInfoRam", Model)
+
     <div class="card">
         <div class="card-body">
+            @*<button asp-action="Invoice">Generer</button>*@
+
             <h4 id="Header" class="card-subtitle mb-2 text-muted">
                 Calendrier de présence/absence
             </h4>
@@ -72,8 +74,6 @@
                                 }
                             </tr>
 
-
-
                         </thead>
                         <tbody>
                             @*recuperation des informations relatives au ram et les afficher avec
@@ -84,7 +84,6 @@
 
                                 double _SousTotal = 0;
                                 <tr>
-
                                     <td style="text-align: left">    @Html.DisplayFor(modelItem => item.Key)</td>
 
                                     @foreach (var jours in ListeJours)
@@ -145,7 +144,7 @@
 </form>
 
 
-@section Styles {
+@section Styles { 
     <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" type="text/css" href="~/files/assets/pages/data-table/css/buttons.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css">
@@ -209,13 +208,12 @@
     <script>
         $(document).ready(function () {
             $('#dataTable').DataTable(
-
                 {
                     //"lengthChange": true,
 
                     "responsive": false,
 
-                    "searching": true,
+                    "searching": false,
 
                     "ordering": false,
 
@@ -239,20 +237,4 @@
 
     </script>
 
-    @*<script>
-            $(document).ready(function () {
-                mode = $('#mode').val();
-                input = $('input');
-                if (mode == 'update') {
-                    input.prop('disabled', true);
-                }
-                else {
-                    $('#JOURS_TRAVAILLES').attr('value', '0.0');
-                    $('#JOURS_ABSENCE').attr('value', '0.0');
-                }
-
-            });
-        </script>*@
-    <!-- Custom js -->
-    @*<script src="~/files/assets/pages/data-table/js/data-table-custom.js"></script>*@
 }

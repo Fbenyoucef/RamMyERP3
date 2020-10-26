@@ -10,7 +10,6 @@ using RamMyERP3.Models;
 using RamMyERP3.DataContext;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
 
 namespace RamMyERP3.Controllers
@@ -18,10 +17,10 @@ namespace RamMyERP3.Controllers
     public class RamsController : Controller
     {
         private readonly MyContext _context;
-        private readonly IHostingEnvironment _appEnvironment;
-        public RamsController(MyContext context, IHostingEnvironment hostingEnvironment)
+        private readonly IWebHostEnvironment _appEnvironment;
+        public RamsController(MyContext context, IWebHostEnvironment hostingEnvironment)
         {
-            _context = context;
+            this._context = context;
             _appEnvironment = hostingEnvironment;
         }
 
@@ -30,14 +29,14 @@ namespace RamMyERP3.Controllers
         public async Task<IActionResult> Lister()
         {
             // Récupérer les données de la liste
-            var Liste = _context.Ram
-                .Include(d => d.collaborateur);
+            var liste = _context.Ram
+                .Include(d => d.collaborateur).OrderBy(d=>d.MOIS);
 
             // Affecter le titre de la vue
             ViewData["title"] = "Home Page";
 
             // Afficher la vue
-            return View(await Liste.ToListAsync());
+            return View(await liste.ToListAsync());
         }
 
         #endregion Lister
@@ -62,10 +61,10 @@ namespace RamMyERP3.Controllers
             foreach (var item in ram.ListeRamDetailsPresence)
             {
                 if (!ram.DetailsAbsence.ContainsKey(item.affaireCollaborateur.affaire.NOM))
-                    ram.DetailsAbsence.Add(item.affaireCollaborateur.affaire.NOM, new List<string> { item.DATE_TRAVAILLE.Day + "_" + item.NOMBREHEURE });
+                    ram.DetailsAbsence.Add(item.affaireCollaborateur.affaire.NOM, new List<string> { item.DATE_TRAVAILLE.Day + "_" + item.nombreHeure });
 
                 else
-                    ram.DetailsAbsence[item.affaireCollaborateur.affaire.NOM].Add(item.DATE_TRAVAILLE.Day + "_" + item.NOMBREHEURE);
+                    ram.DetailsAbsence[item.affaireCollaborateur.affaire.NOM].Add(item.DATE_TRAVAILLE.Day + "_" + item.nombreHeure);
 
             }
             //recuperer la liste des absences pour le ram selectionné.
@@ -96,7 +95,7 @@ namespace RamMyERP3.Controllers
                     .ThenInclude(c => c.affaire)
                     .ThenInclude(c => c.AFFAIRETYPE)
                 .Include(r => r.ListeRamDetailsAbsence)
-                    .ThenInclude(ListeRamDetailsAbsence => ListeRamDetailsAbsence.r_absence_type)
+                    .ThenInclude(listeRamDetailsAbsence => listeRamDetailsAbsence.r_absence_type)
 
                 .FirstOrDefaultAsync(m => m.ID == id);
         }
@@ -106,22 +105,17 @@ namespace RamMyERP3.Controllers
         #region Ajout
 
         //  Action d'affichage de la vue saisie RAM lors du clique sur Ajouter (Http Get)
-        public async Task<IActionResult> CreationRam(Ram? rams)
+        public IActionResult CreationRam()
         {
-            Ram ram = new Ram();
-            ram.collaborateur = _context.Collaborateur.Where(e => e.ID == 2).
-                Include(d => d.ListeAffaireCollaborateur)
-                   .ThenInclude(c => c.affaire)
-                   .ThenInclude(c => c.AFFAIRETYPE)
-                .FirstOrDefault();
-            ram.collaborateurID = 2;
-            if (rams.ANNEEMOIS != null)
-                ram.ANNEEMOIS = rams.ANNEEMOIS;
-
-            if (ram == null)
+            Ram ram = new Ram
             {
-                return NotFound();
-            }
+                collaborateur = _context.Collaborateur.Where(e => e.ID == 2).Include(d => d.ListeAffaireCollaborateur)
+                    .ThenInclude(c => c.affaire)
+                    .ThenInclude(c => c.AFFAIRETYPE)
+                    .FirstOrDefault(),
+                collaborateurID = 2
+            };
+
             //Affectation du mode pour debloquer les champs de saisie du RAM 
             ViewData["mode"] = "ajout";
             return View(ram);
@@ -132,26 +126,26 @@ namespace RamMyERP3.Controllers
         public async Task<IActionResult> CreationRam(string[] tableauRam, Ram ram)
         {
             // verification de la saisie du model
-            if (ModelState.IsValid)
-            {// model valide
-                //mise à jours du Ram et insertion dans la base de données 
-                var ram2 = await InsererRam(tableauRam, ram);
-                return RedirectToAction(nameof(Details), ram2);
+            if (ModelState.IsValid)       // model valide
+            {
+                // Mettre à jours du Ram et insertion dans la base de données 
+                ram = await InsererRam(tableauRam, ram);
+                return RedirectToAction(nameof(Details), ram);
             }
             // model non valide, affichage des erreur sur la page 
-            return await CreationRam(ram);
+            return CreationRam();
 
         }
         //Methode d'insertion du ram dans la base de données 
         private async Task<Ram> InsererRam(string[] tableauRam, Ram ram)
         {
-            double _NombreJoursTravaille = 0;
-            double _NombreJourAbsence = 0;
-            var _anneeMois = ram.ANNEEMOIS.Split('-');
-            int _Annee = int.Parse(_anneeMois[0]);
-            int _Mois = int.Parse(_anneeMois[1]);
-            ram.MOIS = _Mois;
-            ram.ANNEE = _Annee;
+            double nombreJoursTravaille = 0;
+            double nombreJourAbsence = 0;
+            var anneeMois = ram.ANNEEMOIS.Split('-');
+            int annee = int.Parse(anneeMois[0]);
+            int mois = int.Parse(anneeMois[1]);
+            ram.MOIS = mois;
+            ram.ANNEE = annee;
             //Ram ramFinal = new Ram();
             //ramFinal = ram;
             //initialisation des listes d'absence et de presence 
@@ -162,51 +156,48 @@ namespace RamMyERP3.Controllers
             {
                 //recuperer les informations saisies dans le tableau
                 var tab = item.Split('_');
-                var _TypeMission = tab[0];
-                var _TypeAffaire = tab[1];
-                var _JourConcerne = tab[2];
-                var _NombreHeureTravaille = tab[3];
-                ram.MOIS = _Mois;
-                ram.ANNEE = _Annee;
-                if (_NombreHeureTravaille != "0")
+                var typeMission = tab[0];
+                var typeAffaire = tab[1];
+                var jourConcerne = tab[2];
+                var nombreHeureTravaille = tab[3];
+                ram.MOIS = mois;
+                ram.ANNEE = annee;
+                if (nombreHeureTravaille != "0")
                 {
                     // verifier quel type de saisie : presence ou absence 
-                    switch (_TypeMission)
+                    switch (typeMission)
                     {
                         case "PRES": // presence
-                            RamDetailsPresence _presence = new RamDetailsPresence();
-                            var affairecollaborateuriD = _context.AffaireCollaborateur.Where(d => d.AFFAIREID == int.Parse(_TypeAffaire)).FirstOrDefault();
+                            RamDetailsPresence presence = new RamDetailsPresence();
+                            var affairecollaborateuriD = _context.AffaireCollaborateur.FirstOrDefault(d => d.AFFAIREID == int.Parse(typeAffaire));
 
-                            _presence.AffaireCollaborateurID = affairecollaborateuriD.ID;
-                            _presence.RAMID = ram.ID;
-                            _presence.DATE_TRAVAILLE = new DateTime(_Annee, _Mois, int.Parse(_JourConcerne));
-                            _presence.NOMBREHEURE = double.Parse(_NombreHeureTravaille);
-                            _NombreJoursTravaille += double.Parse(_NombreHeureTravaille);
-                            ram.ListeRamDetailsPresence.Add(_presence);
+                            if (affairecollaborateuriD != null)
+                                presence.AffaireCollaborateurID = affairecollaborateuriD.ID;
+                            presence.RAMID = ram.ID;
+                            presence.DATE_TRAVAILLE = new DateTime(annee, mois, int.Parse(jourConcerne));
+                            presence.nombreHeure = double.Parse(nombreHeureTravaille);
+                            nombreJoursTravaille += double.Parse(nombreHeureTravaille);
+                            ram.ListeRamDetailsPresence.Add(presence);
                             break;
 
                         case "ABSE": //Absence
-                            RamDetailsAbsence _absence = new RamDetailsAbsence();
-                            _absence.DATE_ABSENCE = new DateTime(_Annee, _Mois, int.Parse(_JourConcerne));
-                            _absence.R_absence_typeID = int.Parse(_TypeAffaire);
-                            _absence.RAMID = ram.ID;
-                            _absence.NOMBREHEURES = double.Parse(_NombreHeureTravaille);
-                            //  _context.Add(_absence);
-                            ram.ListeRamDetailsAbsence.Add(_absence);
-                            _NombreJourAbsence += double.Parse(_NombreHeureTravaille);
+                            RamDetailsAbsence absence = new RamDetailsAbsence();
+                            absence.DATE_ABSENCE = new DateTime(annee, mois, int.Parse(jourConcerne));
+                            absence.R_absence_typeID = int.Parse(typeAffaire);
+                            absence.RAMID = ram.ID;
+                            absence.NOMBREHEURES = double.Parse(nombreHeureTravaille);
+                            ram.ListeRamDetailsAbsence.Add(absence);
+                            nombreJourAbsence += double.Parse(nombreHeureTravaille);
 
                             break;
                     }
-                    //   await _context.SaveChangesAsync();
-                    // mise a jours du context 
-
                 }
             }
-            //mise a jours du nombre de jours travaillée et les jours d'absence dans l'objet RAM
-            ram.JOURS_ABSENCE = _NombreJourAbsence;
-            ram.JOURS_TRAVAILLES = _NombreJoursTravaille;
+            // Mettre à jours du nombre de jours travaillée et les jours d'absence dans l'objet RAM
+            ram.JOURS_ABSENCE = nombreJourAbsence;
+            ram.JOURS_TRAVAILLES = nombreJoursTravaille;
             ram.collaborateur = null;
-            // mise a jours du context 
+            // Mettre à jours le context 
             _context.Add(ram);
             _context.Entry(ram).State = EntityState.Added;
             await _context.SaveChangesAsync();
@@ -234,14 +225,14 @@ namespace RamMyERP3.Controllers
             {
                 try
                 {
-                    ram.DetailsAbsence[item.affaireCollaborateur.affaire.NOM].Add("PRES_" + item.affaireCollaborateur.AFFAIREID + "_" + item.DATE_TRAVAILLE.Day + "_" + item.NOMBREHEURE);
+                    ram.DetailsAbsence[item.affaireCollaborateur.affaire.NOM].Add("PRES_" + item.affaireCollaborateur.AFFAIREID + "_" + item.DATE_TRAVAILLE.Day + "_" + item.nombreHeure);
                 }
                 catch
                 {
-                    ram.DetailsAbsence[item.affaireCollaborateur.affaire.NOM] = new List<string> { "PRES_" + item.affaireCollaborateur.AFFAIREID + "_" + item.DATE_TRAVAILLE.Day + "_" + item.NOMBREHEURE };
+                    ram.DetailsAbsence[item.affaireCollaborateur.affaire.NOM] = new List<string> { "PRES_" + item.affaireCollaborateur.AFFAIREID + "_" + item.DATE_TRAVAILLE.Day + "_" + item.nombreHeure };
                 }
             }
-            //Recuperation de la liste du des affaires du collaborateur 
+            // Récuperation de la liste du des affaires du collaborateur 
             foreach (var item in ram.collaborateur.ListeAffaireCollaborateur)
             {
                 if (item.affaire != null)
@@ -276,7 +267,7 @@ namespace RamMyERP3.Controllers
             }
             //definition du mode de la page
             ViewData["mode"] = "update";
-            ViewData["collaborateurID"] = new SelectList(_context.Collaborateur, "ID", "ID", ram.collaborateurID);
+            // ViewData["collaborateurID"] = new SelectList(context.Collaborateur, "ID", "ID", ram.collaborateurID);
             return View(ram);
         }
 
@@ -286,69 +277,70 @@ namespace RamMyERP3.Controllers
         {
             //recuperation des infos du ram
             var ram = await GetInfoRam(id);
-            //mise a jours du ram avec les informations saisies par l'utilisateurs
+            // Mettre à jours du ram avec les informations saisies par l'utilisateurs
             ram = await ModifierDetailsRam(tableauRam, ram);
-            //rediriger vers la page details 
+            // Rediriger vers la page détails 
             return RedirectToAction(nameof(Details), ram);
         }
         private async Task<Ram> ModifierDetailsRam(string[] tableauRam, Ram ram)
         {
-            double _NombreJoursTravaille = 0;
-            double _NombreJourAbsence = 0;
-            //var _anneeMois = ram.AnneeMois.Split('-');
-            int _Annee = ram.ANNEE;
-            int _Mois = ram.MOIS;
+            double nombreJoursTravaille = 0;
+            double nombreJourAbsence = 0;
+            int annee = ram.ANNEE;
+            int mois = ram.MOIS;
             ram.ListeRamDetailsAbsence = new Collection<RamDetailsAbsence>();
             ram.ListeRamDetailsPresence = new Collection<RamDetailsPresence>();
             //suppression du details de presence et absence existante pour ce ram
             _context.RamDetailsAbsence.RemoveRange(ram.ListeRamDetailsAbsence);
             _context.RamDetailsPresence.RemoveRange(ram.ListeRamDetailsPresence);
-            //saubegarder le contexte
+            // Sauvegarder le contexte
             await _context.SaveChangesAsync();
             //Parcour du tableau pour determiner le nombre de jours d'absence, et le nombre de jours travaillés 
             foreach (var item in tableauRam)
             {
                 //recuperer les informations saisies dans le tableau
                 var tab = item.Split('_');
-                var _TypeMission = tab[0];
-                var _TypeAffaire = tab[1];
-                var _JourConcerne = tab[2];
-                var _NombreHeureTravaille = tab[3];
-                if (_NombreHeureTravaille != "0")
+                var typeMission = tab[0];
+                var typeAffaire = tab[1];
+                var jourConcerne = tab[2];
+                var nombreHeureTravaille = tab[3];
+                if (nombreHeureTravaille != "0")
                 {
                     // verifier quel type de saisie : presence ou absence 
-                    switch (_TypeMission)
+                    switch (typeMission)
                     {
                         case "PRES": // presence
-                            RamDetailsPresence _presence = new RamDetailsPresence();
-                            var affairecollaborateuriD = _context.AffaireCollaborateur.Where(d => d.AFFAIREID == int.Parse(_TypeAffaire)).FirstOrDefault();
+                            RamDetailsPresence presence = new RamDetailsPresence();
+                            var affairecollaborateuriD = _context.AffaireCollaborateur.FirstOrDefault(d => d.AFFAIREID == int.Parse(typeAffaire));
 
-                            _presence.AffaireCollaborateurID = affairecollaborateuriD.ID;
-                            _presence.RAMID = ram.ID;
-                            _presence.DATE_TRAVAILLE = new DateTime(_Annee, _Mois, int.Parse(_JourConcerne));
-                            //_presence.ram = ram;
-                            _presence.NOMBREHEURE = double.Parse(_NombreHeureTravaille);
-                            _context.Add(_presence);
-                            _NombreJoursTravaille += double.Parse(_NombreHeureTravaille);
+                            if (affairecollaborateuriD != null)
+                                presence.AffaireCollaborateurID = affairecollaborateuriD.ID;
+                            presence.RAMID = ram.ID;
+                            presence.DATE_TRAVAILLE = new DateTime(annee, mois, int.Parse(jourConcerne));
+                            presence.nombreHeure = double.Parse(nombreHeureTravaille);
+                            _context.Add(presence);
+                            nombreJoursTravaille += double.Parse(nombreHeureTravaille);
                             break;
 
                         case "ABSE": //Absence
-                            RamDetailsAbsence _absence = new RamDetailsAbsence();
-                            _absence.DATE_ABSENCE = new DateTime(_Annee, _Mois, int.Parse(_JourConcerne));
-                            _absence.R_absence_typeID = int.Parse(_TypeAffaire);
-                            _absence.RAMID = ram.ID;
-                            _absence.NOMBREHEURES = double.Parse(_NombreHeureTravaille);
-                            _context.Add(_absence);
-                            _NombreJourAbsence += double.Parse(_NombreHeureTravaille);
+                            RamDetailsAbsence absence = new RamDetailsAbsence();
+                            absence.DATE_ABSENCE = new DateTime(annee, mois, int.Parse(jourConcerne));
+                            absence.R_absence_typeID = int.Parse(typeAffaire);
+                            absence.RAMID = ram.ID;
+                            absence.NOMBREHEURES = double.Parse(nombreHeureTravaille);
+                            _context.Add(absence);
+                            nombreJourAbsence += double.Parse(nombreHeureTravaille);
                             break;
                     }
                     // mise a jours du context 
                     await _context.SaveChangesAsync();
                 }
             }
-            //mise a jours du nombre de jours travaillée et les jours d'absence dans l'objet RAM            
-            _context.Ram.Where(d => d.ID == ram.ID).FirstOrDefault().JOURS_ABSENCE = _NombreJourAbsence;
-            _context.Ram.Where(d => d.ID == ram.ID).FirstOrDefault().JOURS_TRAVAILLES = _NombreJoursTravaille;
+
+            // Mettre à jours le nombre de jours travaillée et les jours d'absence dans l'objet RAM            
+            ram.JOURS_ABSENCE = nombreJourAbsence;
+            ram.JOURS_TRAVAILLES = nombreJoursTravaille;
+            _context.Update(ram);
             // mise à jours de la base de données
             await _context.SaveChangesAsync();
             return ram;
@@ -364,13 +356,13 @@ namespace RamMyERP3.Controllers
         //[ValidateAntiForgeryToken]
         //public async Task<IActionResult> DeleteConfirmed(int id)
         //{
-        //    var ram = await _context.Ram
+        //    var ram = await context.Ram
         //        .Include(r => r.ListeRamDetailsAbsence)
         //        .Include(d => d.ListeRamDetailsPresence)
         //        .FirstOrDefaultAsync(r => r.ID == id);
 
-        //    _context.Ram.Remove(ram);
-        //    await _context.SaveChangesAsync();
+        //    context.Ram.Remove(ram);
+        //    await context.SaveChangesAsync();
         //    //return RedirectToAction(nameof(Index));
         //    return Content("Lister");
         //}
@@ -398,19 +390,14 @@ namespace RamMyERP3.Controllers
         // fonction de génération du tableau en fonction du mois et de l'année saisie.
         public async Task<IActionResult> GenererTableauRam(int mois, int annee)
         {
-            Ram ram = new Ram();
+            var ram = await _context.Ram
+                .Include(d => d.collaborateur)
+                .ThenInclude(d => d.ListeAffaireCollaborateur)
+                .ThenInclude(c => c.affaire)
+                .ThenInclude(c => c.AFFAIRETYPE)
+                .FirstOrDefaultAsync(d => d.collaborateur.ID == 2);
             ram.ANNEE = annee;
-            ram = await _context.Ram
-                    .Include(d => d.collaborateur)
-                    .ThenInclude(d => d.ListeAffaireCollaborateur)
-                        .ThenInclude(c => c.affaire)
-                        .ThenInclude(c => c.AFFAIRETYPE)
-                        .FirstOrDefaultAsync(d => d.collaborateur.ID == 2);
-            if (ram == null)
-            {
-                return NotFound();
-            }
-
+            ram.MOIS = mois;
             ram.Details = new Dictionary<string, string>();
             //recuperation de la liste des affaires du collaborateur
             foreach (var elt in ram.collaborateur.ListeAffaireCollaborateur)
@@ -422,11 +409,9 @@ namespace RamMyERP3.Controllers
             {
                 ram.Details.Add(item.NOM, "ABSE_" + item.ID);
             }
-            ram.MOIS = mois;
             return PartialView("_CreateDetailsPresence", ram);
         }
         #endregion
-
         #region canvas 
 
         [HttpPost]
@@ -437,8 +422,8 @@ namespace RamMyERP3.Controllers
             var ram = await _context.Ram.
                 Include(c => c.collaborateur)
                 .FirstOrDefaultAsync(d => d.ID == int.Parse(image.id));
-            string _fileName = ram.collaborateur.NOM + ram.collaborateur.PRENOM + DateTime.Now.ToString().Replace("/", "-").Replace(" ", "- ").Replace(":", "") + ".png";
-            string fileNameWitPath = uploads + _fileName.Replace(" ", "");
+            string fileName = ram.collaborateur.NOM + ram.collaborateur.PRENOM + DateTime.Now.ToString().Replace("/", "-").Replace(" ", "- ").Replace(":", "") + ".png";
+            string fileNameWitPath = uploads + fileName.Replace(" ", "");
             fileNameWitPath = fileNameWitPath.Replace(" ", "");
             using (FileStream fs = new FileStream(fileNameWitPath, FileMode.Create))
             {
@@ -452,7 +437,7 @@ namespace RamMyERP3.Controllers
                 fs.Close();
             }
 
-            ram.SIGNATURE = _fileName.Replace(" ", "");
+            ram.SIGNATURE = fileName.Replace(" ", "");
             _context.Update(ram);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Details), ram);
@@ -467,3 +452,4 @@ namespace RamMyERP3.Controllers
         public string id { get; set; }
     }
 }
+
