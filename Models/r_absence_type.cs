@@ -6,14 +6,8 @@ using System.Threading.Tasks;
 
 namespace RamMyERP3.Models
 {
-    public class r_absence_type
+    public class r_absence_type:ReferenceTable
     {
-		[Column("ID")]
-		public int ID { get; set; }
-		public string NOM { get; set; }
-		public string CODE { get; set; }
-		public DateTime DATE_CREATION { get; set; }
-		public DateTime DATE_MODIFICATION { get; set; }
-		public string USERMODIFICATION { get; set; }
+
 	}
 }
