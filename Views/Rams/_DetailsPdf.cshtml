@@ -1,0 +1,195 @@
+﻿@model RamMyERP3.Models.Ram
+@{
+    int mois = @Model.MOIS;
+    int annee = @Model.ANNEE;
+    string anneeMois = annee.ToString() + '-' + mois.ToString().PadLeft(2, '0');
+    int NombreJours = DateTime.DaysInMonth(annee, mois);
+    var mode = ViewData["mode"];
+    var nbr = 1;
+    var nbr2 = 1;
+    double? totalJours = Model.JOURS_ABSENCE + Model.JOURS_TRAVAILLES;
+    double _Total = 0;
+
+}
+<html>
+<head>
+    <title>Relevé d'activté mensuel </title>
+    <meta name="Description" content="Chiffrage du projet" />
+    <link href="css/detailsPdf.css" rel="stylesheet" />
+    <style>
+        @@font-face {
+            font-family: 'ArialCE';
+            src: url('file:///C:\Users\farou\source\repos\RamMyERP3\wwwroot\fonts\ArialCE.ttf') format('truetype');
+        }
+    </style>
+
+</head>
+<body>
+    <div class="row chiffrage">
+        <table class="table">
+            <!--Informations logo-->
+            <tr>
+                <td>
+                    <img class="logo" src="PDF\my-kiwi-logo-cmjn_vert.png" alt="logo my kiwi">
+                </td>
+                <td style="width: 105PX;">
+                    <p style="
+                                                                                                 font-size: 13px;
+                                                                                                 font-weight: bold;
+                                                                                                 text-align: center;
+                                                                                                 letter-spacing: 1.6px;
+                                                                                                 padding: 0;
+                                                                                                 margin: 0;">RELEVE D'ACTIVITE MENSUEL</p>
+                </td>
+            </tr>
+            <!--Informations collaborateur-->
+            <tr style="width: 100%">
+                <table class="infoChiffrage">
+                    <tr class="headerInfo">
+                        <th colspan="2" style="width: 48%"> <h6 style="font-size: 8px !important">Informations Générales :</h6></th>
+                        <th rowspan="4" style="width: 4%; border-top: none"></th>
+                        <th colspan="2" style="width: 48%"> <h6 style="font-size: 8px !important"></h6></th>
+                    </tr>
+                    <tr>
+                        <th style="font-size: 8px !important; width: 20% !important;">Nom :</th>
+                        <td style="font-size: 8px !important; width: 28% !important;">@Model.collaborateur.NOM.ToUpper()</td>
+                        <th style="font-size: 8px !important; width: 20% !important;">JOURS TRAVAILLES : </th>
+                        <td style="font-size: 8px !important; width: 28% !important;">@Model.JOURS_TRAVAILLES</td>
+
+                    </tr>
+                    <tr>
+                        <th style="font-size: 8px !important; width: 20% !important;">PRENOM :</th>
+                        <td style="font-size: 8px !important; width: 30% !important;">@Model.collaborateur.PRENOM.ToUpper()</td>
+                        <th style="font-size: 8px !important; width: 20% !important;">JOURS D'ABSENCES : </th>
+                        <td style="font-size: 8px !important; width: 30% !important;">@Model.JOURS_ABSENCE</td>
+                    </tr>
+                    <tr>
+                        <th style="font-size: 8px !important; width: 20% !important;">ANNEE/MOIS :</th>
+                        <td style="font-size: 8px !important; width: 30% !important;">@anneeMois</td>
+                        <th style="font-size: 8px !important; width: 20% !important;">TOTAL : </th>
+                        <td style="font-size: 8px !important; width: 30% !important;">@totalJours</td>
+                    </tr>
+                </table>
+            </tr>
+            <!--Ram-->
+            <tr>
+                <table class="table-fonction">
+                    <thead style="background-color: mediumseagreen;">
+                        <tr>
+                            <th rowspan="2">
+                                Mission
+                            </th>
+                            @{
+                                var ListeJours = new List<int>();
+                            }
+                            @while (nbr <= NombreJours)
+                            {
+                                DateTime dateJours = new DateTime(annee, mois, nbr);
+                                if (dateJours.DayOfWeek == DayOfWeek.Saturday || dateJours.DayOfWeek == DayOfWeek.Sunday)
+                                {
+                                    nbr++;
+                                    continue;
+                                }
+                                else
+                                {
+                                    <th style="width: 3%">@dateJours.ToString("ddd").Substring(0, 1)</th>
+                                    ListeJours.Add(nbr);
+                                    nbr++;
+                                }
+
+                            }
+
+                            <th rowspan="2">
+                                Total
+                            </th>
+                        </tr>
+                        <tr>
+                            @{
+
+                                @foreach (var item in ListeJours)
+                                {
+                                    <th>@item</th>
+                                }
+
+                            }
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.DetailsAbsence)
+                        {
+                            //Affichage du nombre de jours travaillé par mission
+
+                            double _SousTotal = 0;
+                            <tr>
+
+                                <th style="background-color: mediumseagreen; color: white; border-bottom: 1px solid #e9ecef;">@Html.DisplayFor(modelItem => item.Key)</th>
+                                @foreach (var jours in ListeJours)
+                                {
+                                    DateTime dateJours = new DateTime(annee, mois, jours);
+                                    bool find = false;
+                                    @foreach (var elt in item.Value)
+                                    {
+                                        var _tab = elt.Split('_');
+                                        if (int.Parse(_tab[0]) == jours)
+                                        {
+                                            _SousTotal += double.Parse(_tab[1]);
+
+                                            <td style="text-align: center"> @_tab[1]</td>
+
+
+
+                                            find = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!find)
+                                    {
+                                        <td></td>
+                                    }
+
+                                }
+                                @{
+                                    _Total += _SousTotal;
+                                }
+                                @*nombre de jours total qui a été saisie (travail et absence)*@
+
+                                <td style="text-align: center">@_SousTotal</td>
+
+                            </tr>
+
+                        }
+                        @{
+                            nbr2 = ListeJours.Count + 1;
+                        }
+                        <tr style="background-color: lightgrey">
+                            <th colspan="@nbr2" style="font-size: 6px; border: 0.5px solid darkgray;">TOTALE JOURS</th>
+                            <td style="text-align: center; font-size: 6px; border: 0.5px solid darkgray;">@_Total</td>
+                        </tr>
+                    </tbody>
+
+
+
+                </table>
+            </tr>
+            @*signature*@
+            <tr style="width: 100%">
+                <table class="infoChiffrage">
+                    <th style="font-size: 8px !important; width: 20% !important; text-align: end"></th>
+                    <td style="font-size: 8px !important; width: 30% !important;"></td>
+                    <th style="font-size: 8px !important; width: 20% !important; text-align: end"></th>
+
+                    <th style="text-align: center ;font-size: 8px !important; height: 50px; width: 20% !important; vertical-align:middle;">Signature </th>
+                    <td style="font-size: 8px !important; width: 28% !important;">
+                        <img src="Images/@Model.SIGNATURE" style="width: 140px; text-align: end" />
+                    </td>
+                </table>
+            </tr>
+
+        </table>
+    </div>
+</body>
+
+</html>
+
+

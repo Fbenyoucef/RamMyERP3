@@ -65,9 +65,9 @@ namespace RamMyERP3.Helpers
                     // Afficher le bouton Retour
                     "<a class=\"btn btn-mat btn-secondary\"  href=\"Lister" + (!string.IsNullOrWhiteSpace(ParametresActionsRetour) ? "?" + ParametresActionsRetour : "") + "\"><i class=\"fa fa-reply\"></i> Retour</a>" +
                     // Afficher le bouton Valider
-                    "<button form=\"Ajouter\" class=\"btn btn-mat btn-success bg-primary \" id=\"Ajout\" type=\"Ajouter\"><i class=\"fa fa-save\"></i> Valider</button>" +
-                // Afficher le bouton signature 
-                $"<a  id=\"Signature\" class=\"btn btn-mat btn-success\"  data-id = \"@item.ID\" data-toggle = \"modal\" data-target = \"#SignerRam\" href =\"../Modifier/{Id}\"><i class=\"fa fa-edit\"></i> Signer</a> ";
+                    "<button form=\"Ajouter\" class=\"btn btn-mat btn-success bg-primary \" id=\"Ajout\" type=\"Ajouter\"><i class=\"fa fa-save\"></i> Valider</button>"; //+
+                //// Afficher le bouton signature 
+                //$"<a  id=\"Signature\" class=\"btn btn-mat btn-success\"  data-id = \"@item.ID\" data-toggle = \"modal\" data-target = \"#SignerRam\" href =\"../Modifier/{Id}\"><i class=\"fa fa-edit\"></i> Signer</a> ";
 
             }
 

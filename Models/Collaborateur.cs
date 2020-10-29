@@ -13,6 +13,9 @@ namespace RamMyERP3.Models
         public string NOM { get; set; }
         [DisplayName("Prénom")]
         public string PRENOM { get; set; }
+
+        public string USERID { get; set; }
+
         [DisplayName("Date de naissance")]
         public DateTime DATENAISSANCE { get; set; }
         public ICollection<Ram> LISTERAM { get; set; }

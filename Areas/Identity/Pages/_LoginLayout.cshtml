@@ -1,11 +1,12 @@
-﻿@{
-    Layout = null;
-}
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
+@{
+    ViewData["Title"] = "Authentification";
+}
+
 <head>
+    <title>@ViewData["Title"]</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,36 +14,18 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="~/files/bower_components/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="~/files/assets/icon/font-awesome/css/font-awesome.min.css">
-    @RenderSection("Styles", required: false)
-
     <link rel="stylesheet" type="text/css" href="~/files/assets/css/style.css">
+    <link rel="stylesheet" href="~/css/site.css">
+
 </head>
 
-<body class="fix-menu">
-    <!-- Pre-loader start -->
-    <div class="theme-loader">
-        <div class="ball-scale">
-            <div class='contain'>
-                <div class="ring"><div class="frame"></div></div>
-                <div class="ring"><div class="frame"></div></div>
-                <div class="ring"><div class="frame"></div></div>
-                <div class="ring"><div class="frame"></div></div>
-                <div class="ring"><div class="frame"></div></div>
-                <div class="ring"><div class="frame"></div></div>
-                <div class="ring"><div class="frame"></div></div>
-                <div class="ring"><div class="frame"></div></div>
-                <div class="ring"><div class="frame"></div></div>
-                <div class="ring"><div class="frame"></div></div>
-            </div>
-        </div>
-    </div>
-    <!-- Pre-loader end -->
+<body style="margin: 0px;">
     <section class="login-block">
         <!-- Container-fluid starts -->
         <div class="container">
             <div class="row">
                 <div class="col-md-6 offset-md-3">
-                    <div class="card login-logout-tab">
+                    <div class="card">
                         <div class="card-body">
                             <div class="logIcon">
                                 <i class="img-responsive center-block fa fa-user-circle fa-9x text-secondary"></i>
@@ -59,14 +42,9 @@
         </div>
     </section>
 
-    <!-- Required Jquery -->
-    <script type="text/javascript" src="~/files/bower_components/jquery/js/jquery.min.js"></script>
-    @RenderSection("Scripts", required: false)
-    <!-- Custom js -->
-    <script type="text/javascript" src="~/files/assets/js/script.js"></script>
-    <link rel="stylesheet" href="~/css/site.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/d3js/6.1.1/d3.min.js"></script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+    <script src="~/files/bower_components/jquery/js/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+  
 </body>
 </html>

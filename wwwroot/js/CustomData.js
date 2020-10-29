@@ -4,37 +4,25 @@ $(document).ready(function () {
     $('#dataTable').on('click', 'tr', function (e) {
         alert("sdfsdfsdfs");
 
-        //var row = $(table).dataTable().api().row(this),
-        //    data = row.data(),
-        //    index = $(table).dataTable().api().cell($(e.target).closest('td')).index().column;
-
-        //if ($(table).hasClass('collapsed') && index == 0) {
-        //    // row collapse icon
-        //    return;
-        //}
-
-        //if (index == 1) {
-        //    console.log("textklsfjlkdfjlskdfjmlsdkjm");
-        //}
     });
 
     $("#AnneeMois").change(function () {
         var Anneemois = $('#AnneeMois');
         Anneemois.css("border-color", "");
-        var Date = $(this).val().split('-');
-        var mois = Date[1];
-        var annee = Date[0];
+        var date = $(this).val().split('-');
+        var mois = date[1];
+        var annee = date[0];
         var area = $("#Details");
         $.get('GenererTableauRam?mois=' + mois + '&annee=' + annee, function (data) {
             area.html(data);
-            DrawDataTable();
+            drawDataTable();
 
         });
     });
-    DrawDataTable();
+    drawDataTable();
 
 
-    function DrawDataTable(id = "dataTable") {
+    function drawDataTable(id = "dataTable") {
         $('#dataTable').DataTable(
 
             {

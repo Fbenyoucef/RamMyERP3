@@ -5,12 +5,11 @@
     ViewData["Title"] = "Details";
     int mois = @Model.MOIS;
     int annee = @Model.ANNEE;
-    string anneeMois = annee.ToString() + '-' + mois.ToString().PadLeft(2, '0');
     int NombreJours = DateTime.DaysInMonth(annee, mois);
     var mode = ViewData["mode"];
     var nbr = 1;
     var nbr2 = 1;
-    double _Total = 0;
+    double total = 0;
 
 }
 
@@ -26,7 +25,7 @@
 
     <div class="card">
         <div class="card-body">
-            @*<button asp-action="Invoice">Generer</button>*@
+            @*<button asp-action="CenererPdf" >Generer</button>*@
 
             <h4 id="Header" class="card-subtitle mb-2 text-muted">
                 Calendrier de présence/absence
@@ -82,7 +81,7 @@
                             {
                                 //Affichage du nombre de jours travaillé par mission
 
-                                double _SousTotal = 0;
+                                double sousTotal = 0;
                                 <tr>
                                     <td style="text-align: left">    @Html.DisplayFor(modelItem => item.Key)</td>
 
@@ -92,13 +91,13 @@
                                         bool find = false;
                                         @foreach (var elt in item.Value)
                                         {
-                                            var _tab = elt.Split('_');
-                                            if (int.Parse(_tab[0]) == jours)
+                                            var tab = elt.Split('_');
+                                            if (int.Parse(tab[0]) == jours)
                                             {
-                                                _SousTotal += double.Parse(_tab[1]);
+                                                sousTotal += double.Parse(tab[1]);
 
                                                 <td>
-                                                    @_tab[1]
+                                                    @tab[1]
 
                                                 </td>
                                                 find = true;
@@ -112,10 +111,10 @@
 
                                     }
                                     @{
-                                        _Total += _SousTotal;
+                                        total += sousTotal;
                                     }
                                     @*nombre de jours total qui a été saisie (travail et absence)*@
-                                    <td>@_SousTotal</td>
+                                    <td>@sousTotal</td>
                                 </tr>
 
                             }
@@ -130,7 +129,7 @@
                                     <td style="border:none"></td>
                                 }
 
-                                <td><strong> @_Total</strong></td>
+                                <td><strong> @total</strong></td>
                             </tr>
 
                         </tbody>
@@ -233,8 +232,6 @@
             $(".dataTables_info").closest("div.row").remove();
 
         });
-
-
     </script>
 
 }

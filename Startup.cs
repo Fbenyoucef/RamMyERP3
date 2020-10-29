@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RamMyERP3.DataContext;
 using RamMyERP3.Models;
+using RamMyERP3.Services;
 
 namespace RamMyERP3
 {
@@ -41,13 +42,11 @@ namespace RamMyERP3
                                       builder.WithOrigins("https://localhost:5001");
                                   });
             });
-            services.AddJsReport(new LocalReporting()
-       .UseBinary(JsReportBinary.GetBinary())
-       .AsUtility()
-       .Create());
-            //services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-            //.AddEntityFrameworkStores<IdentityUserDbContext>()
-            //.AddDefaultTokenProviders();
+           // services.AddScoped<IViewRenderService, ViewRenderService>();
+            services.AddSingleton<IViewRenderService, ViewRenderService>();
+            services.AddRazorPages();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,13 +67,15 @@ namespace RamMyERP3
 
             app.UseRouting();
             app.UseCors();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Rams}/{action=Lister}/{id?}");
+                endpoints.MapRazorPages();
 
             });
         }

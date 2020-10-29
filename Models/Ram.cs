@@ -14,8 +14,14 @@ namespace RamMyERP3.Models
     {
         public int ID { get; set; }
 
-        [Display(Name = "Collaborateur")]
-        public int collaborateurID { get; set; }
+        [Display(Name = "Collaborateur")] 
+        private int _collaborateurId;
+        public int CollaborateurId
+        {
+            get => collaborateur?.ID ?? 0;
+            set => _collaborateurId = value;
+        }
+
         [Display(Name = "Mois")]
         public int MOIS { get; set; }
 

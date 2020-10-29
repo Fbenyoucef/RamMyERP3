@@ -10,27 +10,49 @@ using RamMyERP3.Models;
 using RamMyERP3.DataContext;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Security.Claims;
+using iText.Html2pdf;
+using iText.Kernel.Geom;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.CodeAnalysis.Razor;
+using RamMyERP3.Data;
+using RamMyERP3.Services;
+using Path = System.IO.Path;
 
 namespace RamMyERP3.Controllers
 {
+    [Authorize]
     public class RamsController : Controller
     {
+        #region Attributs
         private readonly MyContext _context;
+        private readonly IHttpContextAccessor _userContext;
         private readonly IWebHostEnvironment _appEnvironment;
-        public RamsController(MyContext context, IWebHostEnvironment hostingEnvironment)
+        private readonly IViewRenderService _viewRenderService;
+        #endregion
+
+        #region constructeur
+        public RamsController(MyContext context, IWebHostEnvironment hostingEnvironment, IHttpContextAccessor userContextontext, IViewRenderService viewRenderService)
         {
             this._context = context;
             _appEnvironment = hostingEnvironment;
+            _userContext = userContextontext;
+            _viewRenderService = viewRenderService;
         }
+        #endregion
 
         #region Lister
         // GET: Rams
         public async Task<IActionResult> Lister()
         {
             // Récupérer les données de la liste
+
             var liste = _context.Ram
-                .Include(d => d.collaborateur).OrderBy(d=>d.MOIS);
+                .Include(d => d.collaborateur).OrderBy(d => d.MOIS);
 
             // Affecter le titre de la vue
             ViewData["title"] = "Home Page";
@@ -44,79 +66,30 @@ namespace RamMyERP3.Controllers
         #region Details
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            //Récuperer les informations relatives au ram.
-            Ram ram = await GetInfoRam(id);
-
-            if (ram == null)
-            {
-                return NotFound();
-            }
-
-            ram.DetailsAbsence = new Dictionary<string, List<string>>();
-            // recuperer la liste des presences pour le ram selectionné 
-            foreach (var item in ram.ListeRamDetailsPresence)
-            {
-                if (!ram.DetailsAbsence.ContainsKey(item.affaireCollaborateur.affaire.NOM))
-                    ram.DetailsAbsence.Add(item.affaireCollaborateur.affaire.NOM, new List<string> { item.DATE_TRAVAILLE.Day + "_" + item.nombreHeure });
-
-                else
-                    ram.DetailsAbsence[item.affaireCollaborateur.affaire.NOM].Add(item.DATE_TRAVAILLE.Day + "_" + item.nombreHeure);
-
-            }
-            //recuperer la liste des absences pour le ram selectionné.
-            foreach (var item in ram.ListeRamDetailsAbsence)
-            {
-                if (!ram.DetailsAbsence.ContainsKey(item.r_absence_type.NOM))
-                {
-                    ram.DetailsAbsence.Add(item.r_absence_type.NOM, new List<string> { item.DATE_ABSENCE.Day + "_" + item.NOMBREHEURES });
-                }
-                else
-                {
-                    ram.DetailsAbsence[item.r_absence_type.NOM].Add(item.DATE_ABSENCE.Day + "_" + item.NOMBREHEURES);
-                }
-            }
-            // affectation du mode de la vue pour bloquer les inputs 
-            ViewData["mode"] = "update";
+            // Récuperer les informations du Ram pour les envoyer à la vue
+            var ram = await RemplirInformationRamParId(id);
             return View(ram);
         }
 
-        //recuperation des informations relatives au RAM
-        private async Task<Ram> GetInfoRam(int? id)
-        {
-            return await _context.Ram
-                .Include(d => d.collaborateur)
-                .ThenInclude(d => d.ListeAffaireCollaborateur)
-                 .Include(r => r.ListeRamDetailsPresence)
-                    .ThenInclude(c => c.affaireCollaborateur)
-                    .ThenInclude(c => c.affaire)
-                    .ThenInclude(c => c.AFFAIRETYPE)
-                .Include(r => r.ListeRamDetailsAbsence)
-                    .ThenInclude(listeRamDetailsAbsence => listeRamDetailsAbsence.r_absence_type)
-
-                .FirstOrDefaultAsync(m => m.ID == id);
-        }
         #endregion
-
 
         #region Ajout
 
         //  Action d'affichage de la vue saisie RAM lors du clique sur Ajouter (Http Get)
         public IActionResult CreationRam()
         {
-            Ram ram = new Ram
+            // Récuperer l'ID d'authentification pour mettre à jours le collaborateur
+            var userId = _userContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var ram = new Ram
             {
-                collaborateur = _context.Collaborateur.Where(e => e.ID == 2).Include(d => d.ListeAffaireCollaborateur)
+                collaborateur = _context.Collaborateur.Where(e => e.USERID == userId).Include(d => d.ListeAffaireCollaborateur)
                     .ThenInclude(c => c.affaire)
                     .ThenInclude(c => c.AFFAIRETYPE)
                     .FirstOrDefault(),
-                collaborateurID = 2
             };
 
-            //Affectation du mode pour debloquer les champs de saisie du RAM 
+            // Affecter le mode pour débloquer les champs de saisie du RAM 
             ViewData["mode"] = "ajout";
             return View(ram);
         }
@@ -148,13 +121,13 @@ namespace RamMyERP3.Controllers
             ram.ANNEE = annee;
             //Ram ramFinal = new Ram();
             //ramFinal = ram;
-            //initialisation des listes d'absence et de presence 
+            // Initialiser les listes d'absences et de présences
             ram.ListeRamDetailsAbsence = new Collection<RamDetailsAbsence>();
             ram.ListeRamDetailsPresence = new Collection<RamDetailsPresence>();
             //Parcour du tableau pour determiner le nombre de jours d'absence, et le nombre de jours travaillés 
             foreach (var item in tableauRam)
             {
-                //recuperer les informations saisies dans le tableau
+                // Récuperer les informations saisies dans le tableau
                 var tab = item.Split('_');
                 var typeMission = tab[0];
                 var typeAffaire = tab[1];
@@ -257,7 +230,7 @@ namespace RamMyERP3.Controllers
                 }
 
             }
-            //completer la liste des avec les types d'absences non existante
+            // completer la liste des avec les types d'absences non existante
             foreach (var item in _context.r_absence_type)
             {
                 if (!ram.DetailsAbsence.ContainsKey(item.NOM))
@@ -265,9 +238,8 @@ namespace RamMyERP3.Controllers
                     ram.DetailsAbsence[item.NOM] = new List<string> { "ABSE_" + item.ID + "_" + " " + "_" + 0 };
                 }
             }
-            //definition du mode de la page
+            // Définir le mode de la page
             ViewData["mode"] = "update";
-            // ViewData["collaborateurID"] = new SelectList(context.Collaborateur, "ID", "ID", ram.collaborateurID);
             return View(ram);
         }
 
@@ -290,7 +262,7 @@ namespace RamMyERP3.Controllers
             int mois = ram.MOIS;
             ram.ListeRamDetailsAbsence = new Collection<RamDetailsAbsence>();
             ram.ListeRamDetailsPresence = new Collection<RamDetailsPresence>();
-            //suppression du details de presence et absence existante pour ce ram
+            // Supprimer les details de presence et d'absence existants pour ce ram
             _context.RamDetailsAbsence.RemoveRange(ram.ListeRamDetailsAbsence);
             _context.RamDetailsPresence.RemoveRange(ram.ListeRamDetailsPresence);
             // Sauvegarder le contexte
@@ -298,7 +270,7 @@ namespace RamMyERP3.Controllers
             //Parcour du tableau pour determiner le nombre de jours d'absence, et le nombre de jours travaillés 
             foreach (var item in tableauRam)
             {
-                //recuperer les informations saisies dans le tableau
+                // Récuperer les informations saisies dans le tableau
                 var tab = item.Split('_');
                 var typeMission = tab[0];
                 var typeAffaire = tab[1];
@@ -306,7 +278,7 @@ namespace RamMyERP3.Controllers
                 var nombreHeureTravaille = tab[3];
                 if (nombreHeureTravaille != "0")
                 {
-                    // verifier quel type de saisie : presence ou absence 
+                    // Vérifier quel type de saisie : presence ou absence 
                     switch (typeMission)
                     {
                         case "PRES": // presence
@@ -332,54 +304,35 @@ namespace RamMyERP3.Controllers
                             nombreJourAbsence += double.Parse(nombreHeureTravaille);
                             break;
                     }
-                    // mise a jours du context 
+                    // Mettre à jours le context 
                     await _context.SaveChangesAsync();
                 }
             }
-
             // Mettre à jours le nombre de jours travaillée et les jours d'absence dans l'objet RAM            
             ram.JOURS_ABSENCE = nombreJourAbsence;
             ram.JOURS_TRAVAILLES = nombreJoursTravaille;
             _context.Update(ram);
-            // mise à jours de la base de données
+            // Mettre à jours de la base de données
             await _context.SaveChangesAsync();
             return ram;
         }
         #endregion
 
         #region suppression
-        // GET: Rams/Delete/5
-
-
-        //// POST: Rams/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    var ram = await context.Ram
-        //        .Include(r => r.ListeRamDetailsAbsence)
-        //        .Include(d => d.ListeRamDetailsPresence)
-        //        .FirstOrDefaultAsync(r => r.ID == id);
-
-        //    context.Ram.Remove(ram);
-        //    await context.SaveChangesAsync();
-        //    //return RedirectToAction(nameof(Index));
-        //    return Content("Lister");
-        //}
 
         // POST: Rams/Delete/5
         [HttpGet, ActionName("Delete")]
-        //action de suppression aprés confirmation de l'utilisateur
+        // Action de suppression aprés confirmation de l'utilisateur
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            //recuperation du ram avec L'id reçu
+            // Récuperation du ram avec L'id reçu
             var ram = await _context.Ram
                 .Include(r => r.ListeRamDetailsAbsence)
                 .Include(d => d.ListeRamDetailsPresence)
                 .FirstOrDefaultAsync(r => r.ID == id);
             //suppression du ram du contexte
             _context.Ram.Remove(ram);
-            // mise a jours de la base de données 
+            // Mettre à jours de la base de données 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Lister));
         }
@@ -412,22 +365,27 @@ namespace RamMyERP3.Controllers
             return PartialView("_CreateDetailsPresence", ram);
         }
         #endregion
+
         #region canvas 
 
         [HttpPost]
         public async Task<IActionResult> UploadImage([FromBody] ImageSend image)
         {
-            // var test = image.Image.Count();
+            // Définir le chemin de sauvegarde de l
             var uploads = Path.Combine(_appEnvironment.WebRootPath, "Images\\");
+            // Récuperer l'objet Ram 
             var ram = await _context.Ram.
                 Include(c => c.collaborateur)
-                .FirstOrDefaultAsync(d => d.ID == int.Parse(image.id));
+                .FirstOrDefaultAsync(d => d.ID == int.Parse(image.Id));
+            // Définir le nom de l'image signature
             string fileName = ram.collaborateur.NOM + ram.collaborateur.PRENOM + DateTime.Now.ToString().Replace("/", "-").Replace(" ", "- ").Replace(":", "") + ".png";
             string fileNameWitPath = uploads + fileName.Replace(" ", "");
             fileNameWitPath = fileNameWitPath.Replace(" ", "");
-            using (FileStream fs = new FileStream(fileNameWitPath, FileMode.Create))
+
+            // Sauvegarder de l'image dans le chemin spécifié
+            await using (FileStream fs = new FileStream(fileNameWitPath, FileMode.Create))
             {
-                using (BinaryWriter bw = new BinaryWriter(fs))
+                await using (BinaryWriter bw = new BinaryWriter(fs))
                 {
                     byte[] data = Convert
                         .FromBase64String(image.Image);
@@ -436,20 +394,114 @@ namespace RamMyERP3.Controllers
                 }
                 fs.Close();
             }
-
+            // Mettre à jours l'objet Ram avec le nom de l'image dans la base de données.
             ram.SIGNATURE = fileName.Replace(" ", "");
             _context.Update(ram);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Details), ram);
         }
         #endregion
+
+        #region PDF 
+        public async Task<IActionResult> GenererPdf(int id)
+        {
+            // Définir le chemin de sauvegarde des documents
+            var BASEURI = Path.Combine(_appEnvironment.WebRootPath, "PDF\\");
+            // Définir le nom du PDF avec l'ID du Ram
+            String destination = String.Format("{0}{1}.pdf", BASEURI, id);
+
+            // Préparation de la page pour récuperer le code HTML aprés traitement
+            var ram = await RemplirInformationRamParId(id);
+            _viewRenderService.Content = await _viewRenderService.RenderToString("_DetailsPdf", ram);
+
+            string html = _viewRenderService.Content;
+
+            // Définir les propriétés pour la conversion de la page en PDF
+            ConverterProperties properties = new ConverterProperties();
+            properties.SetBaseUri(_appEnvironment.WebRootPath);
+            var writer = new PdfWriter(destination,
+                new WriterProperties().SetFullCompressionMode(true));
+
+            PdfDocument pdfDocument = new PdfDocument(writer);
+            // Définir le format du pdf à générer (A4, paysage..)
+            pdfDocument.SetDefaultPageSize(new PageSize(PageSize.A4.Rotate()));
+            // Création du document PDF
+            Document document = HtmlConverter.ConvertToDocument(html, pdfDocument, properties);
+            document.Close();
+
+            // Ouverture du document 
+            byte[] fileByte = System.IO.File.ReadAllBytes(destination);
+            return File(fileByte, "application/pdf");
+        }
+
+        #endregion
+
+        #region fonction generique
+
+        // Récuperer les informations relatives au RAM
+        public async Task<Ram> RemplirInformationRamParId(int? id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+            Ram ram = await GetInfoRam(id);
+            if (ram == null)
+            {
+                return null;
+            }
+
+            ram.DetailsAbsence = new Dictionary<string, List<string>>();
+            // Récuperer la liste des présences pour le ram selectionné 
+            foreach (var item in ram.ListeRamDetailsPresence)
+            {
+                if (!ram.DetailsAbsence.ContainsKey(item.affaireCollaborateur.affaire.NOM))
+                    ram.DetailsAbsence.Add(item.affaireCollaborateur.affaire.NOM, new List<string> { item.DATE_TRAVAILLE.Day + "_" + item.nombreHeure });
+
+                else
+                    ram.DetailsAbsence[item.affaireCollaborateur.affaire.NOM].Add(item.DATE_TRAVAILLE.Day + "_" + item.nombreHeure);
+
+            }
+            // Récuperer la liste des absences pour le ram selectionné.
+            foreach (var item in ram.ListeRamDetailsAbsence)
+            {
+                if (!ram.DetailsAbsence.ContainsKey(item.r_absence_type.NOM))
+                {
+                    ram.DetailsAbsence.Add(item.r_absence_type.NOM, new List<string> { item.DATE_ABSENCE.Day + "_" + item.NOMBREHEURES });
+                }
+                else
+                {
+                    ram.DetailsAbsence[item.r_absence_type.NOM].Add(item.DATE_ABSENCE.Day + "_" + item.NOMBREHEURES);
+                }
+            }
+            // affectation du mode de la vue pour bloquer les inputs 
+            ViewData["mode"] = "update";
+            return ram;
+        }
+        private async Task<Ram> GetInfoRam(int? id)
+        {
+            return await _context.Ram
+                .Include(d => d.collaborateur)
+                .ThenInclude(d => d.ListeAffaireCollaborateur)
+                .Include(r => r.ListeRamDetailsPresence)
+                .ThenInclude(c => c.affaireCollaborateur)
+                .ThenInclude(c => c.affaire)
+                .ThenInclude(c => c.AFFAIRETYPE)
+                .Include(r => r.ListeRamDetailsAbsence)
+                .ThenInclude(listeRamDetailsAbsence => listeRamDetailsAbsence.r_absence_type)
+
+                .FirstOrDefaultAsync(m => m.ID == id);
+        }
+        #endregion
+
     }
     public class ImageSend
     {
         public ImageSend()
         { }
         public string Image { get; set; }
-        public string id { get; set; }
+        public string Id { get; set; }
     }
 }
 

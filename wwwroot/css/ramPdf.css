@@ -1,0 +1,98 @@
+﻿body {
+    margin: 0;
+    font-family: "ArialCE";
+    font-weight: 400;
+    line-height: 1.5;
+    color: #353c4e;
+    overflow-x: hidden;
+}
+
+.logo {
+    width: 16%;
+    margin-bottom: 1px;
+}
+
+h6 {
+    margin-top: 0;
+}
+
+.h6, h6 {
+    margin-bottom: .1rem;
+    font-family: inherit;
+    font-weight: 500;
+    color: inherit;
+    padding: 1px 0;
+}
+
+table {
+    width: 100%;
+}
+
+.infoChiffrage {
+    margin-top: 50px;
+    margin-bottom: 40px;
+}
+
+.infoChiffrage h6 {
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #757575;
+    line-height: 1.1;
+}
+
+th {
+    text-align: left;
+    /* font-weight: normal; */
+}
+
+.infoChiffrage .headerInfo th {
+    border-top: none;
+}
+
+.infoChiffrage td, .infoChiffrage th {
+    vertical-align: top;
+    border-top: 0.5px solid #e9ecef;
+}
+
+.posteTitle {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    font-size: 8px;
+}
+
+.table-fonction {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-fonction thead th {
+    background-color: mediumseagreen;
+    color: white;
+    font-size: 6px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 4px 2px 4px 2px;
+}
+
+.table-fonction tbody tr th, tbody tr td {
+    font-size: 6px;
+    padding: 4px 2px 4px 2px;
+}
+
+.table-fonction thead td, .table-fonction thead th {
+    border-bottom-width: 1px;
+}
+
+.table-fonction thead th, .table-fonction thead td {
+    border-bottom: 1px solid #e9ecef;
+    border: 0.5px solid #e9ecef;
+}
+
+.table-fonction tbody td, .table-fonction tbody th {
+    border: 0.5px solid darkgray;
+}
+
+.chiffrage {
+    padding: 10px;
+    height: 26.5cm;
+}
