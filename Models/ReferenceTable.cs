@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RamMyERP3.Models
 {
-    public class ReferenceTable
+    public interface IReferenceTable
     {
 		public int ID { get; set; }
 		public string NOM { get; set; }

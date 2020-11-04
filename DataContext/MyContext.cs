@@ -13,6 +13,7 @@ namespace RamMyERP3.DataContext
         {
 
         }
+
         public MyContext(DbContextOptions opt) : base(opt) { }
         public DbSet<r_absence_type> r_absence_type { get; set; }
         public DbSet<Affaire> Affaire { get; set; }

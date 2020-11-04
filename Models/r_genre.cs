@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace RamMyERP3.Models
 {
-    [Domaine("FI")]
-    public class r_affaire_type:IReferenceTable
+    [Domaine("RH")]
+    public class r_genre:IReferenceTable
     {
         public int ID { get; set; }
         public string NOM { get; set; }
@@ -15,6 +15,6 @@ namespace RamMyERP3.Models
         public DateTime DATE_CREATION { get; set; }
         public DateTime DATE_MODIFICATION { get; set; }
         public string USER_MODIFICATION { get; set; }
-        public string USER_CREATION { get; set; }
     }
+
 }

@@ -1,11 +1,13 @@
-﻿using System;
+﻿using RamMyERP3.Helpers.Entite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace RamMyERP3.Models
 {
-    public class r_fonction
+    [Domaine("RH")]
+    public class r_fonction:IReferenceTable
     {
 		public int ID { get; set; }
 		public string NOM { get; set; }

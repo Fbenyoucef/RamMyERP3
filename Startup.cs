@@ -74,7 +74,7 @@ namespace RamMyERP3
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Rams}/{action=Lister}/{id?}");
+                    pattern: "{controller=Reference}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
 
             });
