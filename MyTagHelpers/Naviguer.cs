@@ -39,14 +39,14 @@ namespace MyErp.MyTagHelpers
         // Générer la barre de navigation
         string AfficherBarreNavigation()
         {
-            string html="";
+            string html = "";
 
             // Gérer la fonction Lister
             if (Lister)
             {
                 html =
                     $"<a class=\"btn btn-mat btn-primary\" href=\"Ajouter\"> <i class=\"fas fa-plus\"></i> Ajouter</a> ";
-                
+
             }
 
             // Gérer la fonction Ajouter
@@ -75,8 +75,8 @@ namespace MyErp.MyTagHelpers
                     "<a class=\"btn btn-mat btn-secondary\" href=\"../Lister\"><i class=\"fas fa-reply\"></i> Retour</a> " +
                     // Afficher le bouton Modifier
                     $"<a form=\"modifier\" class=\"btn btn-mat btn-success\" href=\"../Modifier/{Id}\"><i class=\"fas fa-edit\"></i> Modifier</a> ";
-                    //                < !--Afficher le bouton Modifier-- >
-                    //< a class="button btn btn-primary margin-10" asp-action="Modifier" asp-route-id="@Model.Id"><span class="fas fa-edit"></span> Modifier</a>
+                //                < !--Afficher le bouton Modifier-- >
+                //< a class="button btn btn-primary margin-10" asp-action="Modifier" asp-route-id="@Model.Id"><span class="fas fa-edit"></span> Modifier</a>
             }
 
             return html;
@@ -93,7 +93,7 @@ namespace MyErp.MyTagHelpers
                 if (bouton.Url != null) href = $"href=\"{bouton.Url}\"";
                 html += $"<a id=\"{bouton.Id}\" class=\"btn btn-mat {bouton.Style}\" {bouton.Data} title=\"{bouton.Titre}\" data-id=\"{bouton.Id}\" {bouton.Data} {href}>" +
                         $"<i class=\"{bouton.Icon}\"></i> " +
-                        bouton.Titre+
+                        bouton.Titre +
                     "</a>";
             }
             return html;

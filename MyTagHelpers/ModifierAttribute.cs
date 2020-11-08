@@ -6,13 +6,10 @@
  * Modification     : 23/08/2019 - Mourad Yamani
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyErp.MyTagHelpers
 {
-    public class ModifierAttribute: Attribute
+    public class ModifierAttribute : Attribute
     {
         //La position de colonne
         public int Position { get; set; }
@@ -34,5 +31,5 @@ namespace MyErp.MyTagHelpers
         public Type TypeObjet { get; set; }
 
     }
-    
+
 }

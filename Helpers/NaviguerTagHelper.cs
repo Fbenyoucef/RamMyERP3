@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
 using RamMyERP3.Helpers.Entite;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RamMyERP3.Helpers
 {

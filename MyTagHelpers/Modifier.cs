@@ -5,16 +5,12 @@
  * Modification     : 18/12/2019 - Mourad Yamani
  * Modification     : 23/08/2019 - Mourad Yamani
  */
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace MyErp.MyTagHelpers
 {
@@ -44,14 +40,14 @@ namespace MyErp.MyTagHelpers
             output.Attributes.Add("id", "dataTable_wrapper");
             //sélectionner les attributs contient annotation lister et trié par position.
             var props = GetItemProperties()
-                .Where(c =>c.CustomAttributes.Any(a => a.AttributeType.Name ==nameof(ModifierAttribute)))
-                .OrderBy(s =>s.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name ==nameof(ModifierAttribute))
-                    .NamedArguments.FirstOrDefault(t => t.MemberName== nameof(ModifierAttribute.Position)).TypedValue.Value);
+                .Where(c => c.CustomAttributes.Any(a => a.AttributeType.Name == nameof(ModifierAttribute)))
+                .OrderBy(s => s.CustomAttributes.FirstOrDefault(a => a.AttributeType.Name == nameof(ModifierAttribute))
+                    .NamedArguments.FirstOrDefault(t => t.MemberName == nameof(ModifierAttribute.Position)).TypedValue.Value);
             //Pour Generer l'entête de la table
             TableHeader(output, props);
             //pour generer le contenue de la table
             //TableBody(output, props);
-        }        
+        }
 
         #region Afficher la carte
         // Afficher la carte (Photo)
@@ -94,7 +90,7 @@ namespace MyErp.MyTagHelpers
                 if (key.Count() == 0)
                 {
                     var name = GetNomOnglet(prop);
-                    if (tab!=name)
+                    if (tab != name)
                     {
                         string IdTab = name.Replace(' ', '_');
                         output.Content.AppendHtml(
@@ -141,7 +137,7 @@ namespace MyErp.MyTagHelpers
         {
             var listType = Items.GetType();
             Type itemType;
-            if (Items!=null)
+            if (Items != null)
             {
                 //itemType = listType.GetGenericArguments().First();
                 return Items.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -164,7 +160,7 @@ namespace MyErp.MyTagHelpers
         {
             var attribute = property.GetCustomAttribute<DisplayAttribute>();
 
-            if (attribute != null) 
+            if (attribute != null)
             {
                 return attribute.Name;
             }
@@ -174,7 +170,7 @@ namespace MyErp.MyTagHelpers
         private bool IsLister(PropertyInfo property)
         {
             var attribute = property.GetCustomAttributes<ListerAttribute>();
-            if (attribute.Count()==1)
+            if (attribute.Count() == 1)
             {
                 return true;
             }
@@ -196,14 +192,14 @@ namespace MyErp.MyTagHelpers
             var b = property.GetValue(instance);
             if (InfoListe != null && b != null && (b.GetType() == typeof(bool) || b.GetType() == typeof(string)))
             {
-                
+
                 string href = "";
                 if (InfoListe.IsUrl)
                     href = $"href =\"{InfoListe.Url}{b.ToString()}\"";
                 //les icons pour les champs bool true ou false
-                if (InfoListe.IconeOk!=string.Empty && b!=null && b.GetType() == typeof(bool))
+                if (InfoListe.IconeOk != string.Empty && b != null && b.GetType() == typeof(bool))
                 {
-                    if ((bool) b)
+                    if ((bool)b)
                     {
                         return HtmlIcon(InfoListe.IconeOk, href);
                     }
@@ -212,11 +208,11 @@ namespace MyErp.MyTagHelpers
                         return HtmlIcon(InfoListe.IconeKo, href);
                     }
                 }
-                 
+
                 //les icon pour afficher les icon au lieu text 
                 if (InfoListe.IconeOk != null && b.GetType() == typeof(string))
                 {
-                    if (InfoListe.IconeOk != string.Empty && b.ToString()!=string.Empty)
+                    if (InfoListe.IconeOk != string.Empty && b.ToString() != string.Empty)
                     {
                         return HtmlIcon(InfoListe.IconeOk, href);
                     }
@@ -229,11 +225,11 @@ namespace MyErp.MyTagHelpers
             //pour afficher les colonne de type numéro
             if (InfoListe != null && b != null && (b.GetType() == typeof(Int32) && (b.GetType() == typeof(double) || b.GetType() == typeof(decimal) || b.GetType() == typeof(float))))
             {
-                return $"<a class=\"right-elm\">{property.GetValue(instance)}</a>"; 
+                return $"<a class=\"right-elm\">{property.GetValue(instance)}</a>";
 
             }
             //pour afficher un phoo dans la table
-            if (InfoListe.CheminPhoto != string.Empty && InfoListe.CheminPhoto!=null)
+            if (InfoListe.CheminPhoto != string.Empty && InfoListe.CheminPhoto != null)
             {
                 var img = property.GetValue(instance);
                 if (img != null)
@@ -244,12 +240,12 @@ namespace MyErp.MyTagHelpers
             }
 
             var obj = property.GetValue(instance);
-            if (obj != null && InfoListe.DisplayChamp!=null)
+            if (obj != null && InfoListe.DisplayChamp != null)
             {
                 //pour afficher des colonne de table de referance
-                if (obj.GetType().GetProperties().Length > 0 && obj.GetType().GetProperty(InfoListe.DisplayChamp) !=null)
+                if (obj.GetType().GetProperties().Length > 0 && obj.GetType().GetProperty(InfoListe.DisplayChamp) != null)
                 {
-                    var x = obj.GetType().GetProperty(InfoListe.DisplayChamp).GetValue(obj,null);
+                    var x = obj.GetType().GetProperty(InfoListe.DisplayChamp).GetValue(obj, null);
                     return x;
                 }
                 //pour afficher les collection
@@ -267,7 +263,7 @@ namespace MyErp.MyTagHelpers
                                 if (obj2.GetType().GetProperties().Length > 0 && obj2.GetType().GetProperty(InfoListe.DisplayChamp) != null)
                                 {
                                     var value = obj2.GetType().GetProperty(InfoListe.DisplayChamp).GetValue(obj2, null);
-                                    x+=$"<badg class=\"badge badge-primary\">{value}</badg>";
+                                    x += $"<badg class=\"badge badge-primary\">{value}</badg>";
                                 }
                             }
                         }

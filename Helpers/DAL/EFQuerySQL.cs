@@ -1,12 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RamMyERP3.Models;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Dynamic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RamMyERP3.Helpers.DAL
 {

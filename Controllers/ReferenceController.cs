@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RamMyERP3.DataContext;
 using RamMyERP3.Helpers.Entite;
 using RamMyERP3.Models;
-using RamMyERP3.Helpers.DAL;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Data;
-using System.ComponentModel;
+using System.Linq;
+using System.Reflection;
 
 namespace RamMyERP3.Controllers
 {
@@ -34,10 +29,10 @@ namespace RamMyERP3.Controllers
             // Type typeTable = Type.GetType("RamMyERP3.Models." + tableName);
             var typeTable = (from type in AppDomain.CurrentDomain.GetAssemblies()
                         .SelectMany(assembly => assembly.GetTypes().Where(e => e.Name == tableName))
-                         where typeof(IReferenceTable).IsAssignableFrom(type)
-                         select type).FirstOrDefault();
+                             where typeof(IReferenceTable).IsAssignableFrom(type)
+                             select type).FirstOrDefault();
             var ListeData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
-
+            //var testville = _context.r_ville.Include(p => p.R_PAYS).ToList();
             ReferenceModel referenceModel = new ReferenceModel();
             referenceModel.TypeClass = typeTable;
             referenceModel.listeValeur = new List<object>(ListeData);
@@ -47,39 +42,12 @@ namespace RamMyERP3.Controllers
             return View(referenceModel);
         }
 
-
-        private static DataTable ConvertToDatatable<T>(List<T> data)
-        {
-            PropertyDescriptorCollection props = TypeDescriptor.GetProperties(typeof(T));
-            DataTable table = new DataTable();
-            for (int i = 0; i < props.Count; i++)
-            {
-                
-                PropertyDescriptor prop = props[i];
-                if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                    table.Columns.Add(prop.Name, prop.PropertyType.GetGenericArguments()[0]);
-                else
-                    table.Columns.Add(prop.Name, prop.PropertyType);
-            }
-
-            object[] values = new object[props.Count];
-            foreach (T item in data)
-            {
-                for (int i = 0; i < values.Length; i++)
-                {
-                    values[i] = props[i].GetValue(item);
-                }
-                table.Rows.Add(values);
-            }
-            return table;
-        }
-
         // private Dictionary<string, List<Type>> _referenceDomaine;
         public ReferenceDomaine ListTable()
         {
             ReferenceDomaine reference = new ReferenceDomaine();
             //_referenceDomaine = new Dictionary<string, List<Type>>();
-
+            string nomTable = string.Empty;
             var results = from type in AppDomain.CurrentDomain.GetAssemblies()
                              .SelectMany(assembly => assembly.GetTypes())
                           where typeof(IReferenceTable).IsAssignableFrom(type)
@@ -88,15 +56,19 @@ namespace RamMyERP3.Controllers
             {
                 if (item.CustomAttributes.Count() == 0)
                     continue;
-                var domaine = item.GetCustomAttribute(typeof(DomaineAttribute));
-                var nom = domaine.GetType().GetProperties().FirstOrDefault().GetValue(domaine).ToString();
+                var fonction = item.GetCustomAttribute(typeof(FonctionAttribute));
+                var nomFonction = fonction.GetType().GetProperties()[0].GetValue(fonction).ToString();
+                if (item.CustomAttributes.Count() > 1)
+                    nomTable = fonction.GetType().GetProperties()[1].GetValue(fonction).ToString();
+                else
+                    nomTable = item.Name;
                 try
                 {
-                    reference.ReferenceTable[nom].Add(item.Name);
+                    reference.ReferenceTable[nomFonction].Add(nomTable);
                 }
                 catch
                 {
-                    reference.ReferenceTable.Add(nom, new List<string> { item.Name });
+                    reference.ReferenceTable.Add(nomFonction, new List<string> { nomTable });
                 }
             }
             return reference;

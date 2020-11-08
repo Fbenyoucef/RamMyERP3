@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RamMyERP3.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RamMyERP3.DataContext
 {
@@ -27,6 +23,8 @@ namespace RamMyERP3.DataContext
         public DbSet<RamDetailsAbsence> RamDetailsAbsence { get; set; }
         public DbSet<RamDetailsPresence> RamDetailsPresence { get; set; }
         public DbSet<Responsable_client> Responsable_client { get; set; }
+        public DbSet<r_pays> r_pays { get; set; }
+        public DbSet<r_ville> r_ville { get; set; }
 
     }
 }

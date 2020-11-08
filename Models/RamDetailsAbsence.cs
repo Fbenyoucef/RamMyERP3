@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RamMyERP3.Models
 {
@@ -17,7 +14,7 @@ namespace RamMyERP3.Models
         [Column("nombreHeures")]
         public double NOMBREHEURES { get; set; }
         public r_absence_type r_absence_type { get; set; }
-       
+
 
     }
 }

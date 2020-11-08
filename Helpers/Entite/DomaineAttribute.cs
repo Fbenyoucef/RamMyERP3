@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RamMyERP3.Helpers.Entite
 {
-    public class DomaineAttribute:Attribute
+    public class FonctionAttribute : Attribute
     {
-        public DomaineAttribute (string domaine)
+        public FonctionAttribute(string fonction, string nomTable)
         {
-            Domaine = domaine;
+            Fonction = fonction;
+            NomTable = nomTable;
         }
-        public string Domaine { get; set; }
-      
+        public string Fonction { get; set; }
+        public string NomTable { get; set; }
+
     }
 }

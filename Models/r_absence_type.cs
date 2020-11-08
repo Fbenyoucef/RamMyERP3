@@ -1,21 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using RamMyERP3.Helpers.Entite;
+﻿using RamMyERP3.Helpers.Entite;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace RamMyERP3.Models
 {
-   [Domaine("RH")]
-    public class r_absence_type:IReferenceTable
+    [Fonction(fonction: "RH", nomTable: "Type d'absence")]
+    public class r_absence_type : IReferenceTable
     {
-		public int ID { get; set; }
-		public string NOM { get; set; }
-		public string CODE { get; set; }
-		public DateTime DATE_CREATION { get; set; }
-		public DateTime DATE_MODIFICATION { get; set; }
-		public string USER_MODIFICATION { get; set; }
-	}
+        [Display(Name = "Id")]
+        [Key()]
+        public int ID { get; set; }
+        [Display(Name = "Nom")]
+        public string NOM { get; set; }
+        [Display(Name = "Code")]
+        public string CODE { get; set; }
+        [Display(Name = "Date Création")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? DATE_CREATION { get; set; }
+        [Display(Name = "Date Modification")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? DATE_MODIFICATION { get; set; }
+        [Display(Name = "Utilisateur Modification")]
+        public string UTILISATEUR_MODIFICATION { get; set; }
+    }
 }

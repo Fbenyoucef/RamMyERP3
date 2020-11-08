@@ -1,20 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using jsreport.AspNetCore;
-using jsreport.Binary;
-using jsreport.Local;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RamMyERP3.DataContext;
-using RamMyERP3.Models;
 using RamMyERP3.Services;
 
 namespace RamMyERP3
@@ -42,7 +32,7 @@ namespace RamMyERP3
                                       builder.WithOrigins("https://localhost:5001");
                                   });
             });
-           // services.AddScoped<IViewRenderService, ViewRenderService>();
+            // services.AddScoped<IViewRenderService, ViewRenderService>();
             services.AddSingleton<IViewRenderService, ViewRenderService>();
             services.AddRazorPages();
 

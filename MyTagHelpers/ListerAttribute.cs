@@ -7,13 +7,10 @@
  * Modification     : 23/08/2019 - Mourad Yamani
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MyErp.MyTagHelpers
 {
-    public class ListerAttribute: Attribute
+    public class ListerAttribute : Attribute
     {
         //Si le champs Primary Key
         public bool Cle { get; set; }
@@ -38,5 +35,5 @@ namespace MyErp.MyTagHelpers
         public bool Cacher { get; set; }
 
     }
-    
+
 }

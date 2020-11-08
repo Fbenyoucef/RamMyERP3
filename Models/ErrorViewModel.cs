@@ -1,5 +1,3 @@
-using System;
-
 namespace RamMyERP3.Models
 {
     public class ErrorViewModel

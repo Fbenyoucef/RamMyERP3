@@ -9,17 +9,11 @@
  */
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
-using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json.Serialization;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
 
 namespace MyErp.MyTagHelpers
 {
@@ -33,7 +27,7 @@ namespace MyErp.MyTagHelpers
         {
             var proprietes = GetItemProperties();
             // Afficher le datatable
-            AfficherTableEntete(output,proprietes);
+            AfficherTableEntete(output, proprietes);
 
         }
 
@@ -89,7 +83,7 @@ namespace MyErp.MyTagHelpers
             {
                 itemType = listeType.GetGenericArguments().First();
                 var x = itemType.GetProperties();
-                return x ;
+                return x;
             }
 
             return new PropertyInfo[] { };

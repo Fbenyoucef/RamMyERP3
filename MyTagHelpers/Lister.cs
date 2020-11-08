@@ -12,7 +12,6 @@
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -61,7 +60,7 @@ namespace MyErp.MyTagHelpers
             AfficherTableEntete(output, proprietes);
 
             // Afficher le contenu de la table
-             AfficherTableContenu(output, proprietes);
+            AfficherTableContenu(output, proprietes);
         }
 
         // Afficher l'entête du datatable
@@ -104,22 +103,22 @@ namespace MyErp.MyTagHelpers
                 // Boucler sur les colonnes
                 foreach (var propriete in proprietes)
                 {
-                   // var InfoListe = propriete.GetCustomAttributes<ListerAttribute>().First();
+                    // var InfoListe = propriete.GetCustomAttributes<ListerAttribute>().First();
                     var key = propriete.GetCustomAttributes<KeyAttribute>();
 
                     // Tester si la propriété a un ID avec l'annotation [Key]
                     var value = GetPropertyValue(propriete, item);
-                    //if (key.Count() == 0 && !InfoListe.Cle && !InfoListe.Cacher)
-                    //{
-                    //    output.Content.AppendHtml($"<td>{value}</td>");
-                    //}
-                    //else if (key.Count() > 0 || InfoListe.Cle)
-                    //{
-                    //    //var Data = JsonConvert.SerializeObject(item, jsonSerializerSettings);
-                    // Préparer les actions Afficher, Modifier, Supprimer
-                    output.Content.AppendHtml($"<td>{value}</td>");
-                    htmlAction = $"<th>{HtmlAction(value.ToString(), SetData(item))}</th>";
-                    //}
+                    if (key.Count() == 0)
+                    {
+                        output.Content.AppendHtml($"<td>{value}</td>");
+                    }
+                    else if (key.Count() > 0)
+                    {
+                        //var Data = JsonConvert.SerializeObject(item, jsonSerializerSettings);
+                        //Préparer les actions Afficher, Modifier, Supprimer
+                        output.Content.AppendHtml($"<td>{value}</td>");
+                        htmlAction = $"<th>{HtmlAction(value.ToString(), SetData(item))}</th>";
+                    }
                 }
 
                 output.Content.AppendHtml(htmlAction);
@@ -135,15 +134,15 @@ namespace MyErp.MyTagHelpers
         private List<PropertyInfo> GetItemProperties()
         {
             // Récupérer la liste des type de donnée
-          //  var listeType = TypeClass.GetType();
+            //  var listeType = TypeClass.GetType();
 
             Type itemType;
 
             // Tester s'il s'agit d'un type générique
-       
-                //itemType = listeType.GetGenericArguments().First();
-                return TypeClass.GetProperties(BindingFlags.Public | BindingFlags.Instance).ToList();
-          
+
+            //itemType = listeType.GetGenericArguments().First();
+            return TypeClass.GetProperties(BindingFlags.Public | BindingFlags.Instance).ToList();
+
 
             return null;
         }
@@ -163,22 +162,22 @@ namespace MyErp.MyTagHelpers
         private object GetPropertyValue(PropertyInfo property, object instance)
         {
             //var InfoListe = property.GetCustomAttributes<ListerAttribute>().First();
-            //var attributeDisp = property.GetCustomAttributes<DisplayFormatAttribute>();
+            var attributeDisp = property.GetCustomAttributes<DisplayFormatAttribute>();
             var b = property.GetValue(instance);
-          //  bool isNumeric = IsNumeric(b);
-           // var key = property.GetCustomAttributes<KeyAttribute>();
+            bool isNumeric = IsNumeric(b);
+            var key = property.GetCustomAttributes<KeyAttribute>();
 
             // Gérer le format d'affichage DisplayFormat
-            //if (attributeDisp.Count() == 1)
-            //{
-            //    string format = attributeDisp.First().DataFormatString;
-            //    if (key.Count() == 0 && !InfoListe.Cle)
-            //        return string.Format(format, b);
-            //    if (isNumeric)
-            //        return $"<a class=\"right-elm\">{string.Format(format, b)}</a>";
-            //    else
-            //        return string.Format(format, b);
-            //}
+            if (attributeDisp.Count() == 1)
+            {
+                string format = attributeDisp.First().DataFormatString;
+                if (key.Count() != 0)
+                    return string.Format(format, b);
+                else if (isNumeric)
+                    return $"<a class=\"right-elm\">{string.Format(format, b)}</a>";
+                else
+                    return string.Format(format, b);
+            }
 
             //if (InfoListe != null && b != null && (b.GetType() == typeof(bool) || b.GetType() == typeof(string)))
             //{
@@ -214,10 +213,10 @@ namespace MyErp.MyTagHelpers
 
 
             // Afficher les colonnes de type nombre
-            //if (InfoListe != null && b != null && isNumeric && key.Count() == 0 && InfoListe.Cle == false)
-            //{
-            //    return $"<a class=\"right-elm\">{b}</a>";
-            //}
+            if (b != null && isNumeric && key.Count() == 0)
+            {
+                return $"<a class=\"right-elm\">{b}</a>";
+            }
 
             // Afficher les colonne de type photo
             //if (InfoListe.CheminPhoto != string.Empty && InfoListe.CheminPhoto != null)

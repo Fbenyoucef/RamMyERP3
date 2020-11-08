@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace RamMyERP3.Models
 {
@@ -14,7 +9,7 @@ namespace RamMyERP3.Models
     {
         public int ID { get; set; }
 
-        [Display(Name = "Collaborateur")] 
+        [Display(Name = "Collaborateur")]
         private int _collaborateurId;
         public int CollaborateurId
         {

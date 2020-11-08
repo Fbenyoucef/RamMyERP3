@@ -1,20 +1,28 @@
 ﻿using RamMyERP3.Helpers.Entite;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace RamMyERP3.Models
 {
-    [Domaine("FI")]
-    public class r_affaire_type:IReferenceTable
+    [Fonction("FI", "Type Affaire")]
+    public class r_affaire_type : IReferenceTable
     {
+        [Display(Name = "Id")]
+        [Key()]
         public int ID { get; set; }
+        [Display(Name = "Nom")]
         public string NOM { get; set; }
+        [Display(Name = "Code")]
         public string CODE { get; set; }
-        public DateTime DATE_CREATION { get; set; }
-        public DateTime DATE_MODIFICATION { get; set; }
-        public string USER_MODIFICATION { get; set; }
-        public string USER_CREATION { get; set; }
+        [Display(Name = "Date Création")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? DATE_CREATION { get; set; }
+        [Display(Name = "Date Modification")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime? DATE_MODIFICATION { get; set; }
+        [Display(Name = "Utilisateur Modification")]
+        public string UTILISATEUR_MODIFICATION { get; set; }
+        [Display(Name = "Utilisateur Création")]
+        public string UTILISATEUR_CREATION { get; set; }
     }
 }
