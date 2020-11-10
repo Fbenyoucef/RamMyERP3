@@ -73,13 +73,18 @@ namespace MyErp.MyTagHelpers
             // Boucler sur les colonnes
             foreach (var propriete in proprietes)
             {
-                //var InfoListe = propriete.GetCustomAttributes<ListerAttribute>().First();
-                //var key = propriete.GetCustomAttributes<KeyAttribute>();
+                ListerAttribute InfoListe = null;
+                if (propriete.GetCustomAttributes<ListerAttribute>().Count() != 0)
+                    InfoListe = propriete.GetCustomAttributes<ListerAttribute>().First();
+
+                var key = propriete.GetCustomAttributes<KeyAttribute>();
                 //if (key.Count() == 0 && !InfoListe.Cle && !InfoListe.Cacher)
-                //{
-                var name = GetPropertyName(propriete);
-                output.Content.AppendHtml($"<th>{name}</th>");
-                // }
+
+                if (key.Count() == 0 && ((InfoListe != null && !InfoListe.Cle) && (InfoListe != null && !InfoListe.Cacher) || InfoListe == null))
+                {
+                    var name = GetPropertyName(propriete);
+                    output.Content.AppendHtml($"<th>{name}</th>");
+                }
             }
 
             // Afficher la colonne Action
@@ -103,12 +108,12 @@ namespace MyErp.MyTagHelpers
                 // Boucler sur les colonnes
                 foreach (var propriete in proprietes)
                 {
-                    // var InfoListe = propriete.GetCustomAttributes<ListerAttribute>().First();
+                    var InfoListe = propriete.GetCustomAttributes<ListerAttribute>().FirstOrDefault();
                     var key = propriete.GetCustomAttributes<KeyAttribute>();
 
                     // Tester si la propriété a un ID avec l'annotation [Key]
                     var value = GetPropertyValue(propriete, item);
-                    if (key.Count() == 0)
+                    if (key.Count() == 0 && ((InfoListe != null && !InfoListe.Cle) && (InfoListe != null && !InfoListe.Cacher) || InfoListe == null))
                     {
                         output.Content.AppendHtml($"<td>{value}</td>");
                     }
@@ -116,9 +121,13 @@ namespace MyErp.MyTagHelpers
                     {
                         //var Data = JsonConvert.SerializeObject(item, jsonSerializerSettings);
                         //Préparer les actions Afficher, Modifier, Supprimer
-                        output.Content.AppendHtml($"<td>{value}</td>");
+                        //output.Content.AppendHtml($"<td>{value}</td>");
                         htmlAction = $"<th>{HtmlAction(value.ToString(), SetData(item))}</th>";
                     }
+                    //if (key.Count() == 0 && ((InfoListe != null && !InfoListe.Cle) && (InfoListe != null && !InfoListe.Cacher) || InfoListe == null))
+                    //{
+                    //    output.Content.AppendHtml($"<td>{value}</td>");
+                    //}
                 }
 
                 output.Content.AppendHtml(htmlAction);
@@ -161,7 +170,9 @@ namespace MyErp.MyTagHelpers
 
         private object GetPropertyValue(PropertyInfo property, object instance)
         {
-            //var InfoListe = property.GetCustomAttributes<ListerAttribute>().First();
+            ListerAttribute InfoListe = null;
+            if (property.GetCustomAttributes<ListerAttribute>().Count() != 0)
+                InfoListe = property.GetCustomAttributes<ListerAttribute>().First();
             var attributeDisp = property.GetCustomAttributes<DisplayFormatAttribute>();
             var b = property.GetValue(instance);
             bool isNumeric = IsNumeric(b);
@@ -228,15 +239,16 @@ namespace MyErp.MyTagHelpers
             //    }
             //}
 
-            var obj = property.GetValue(instance);
-            //if (obj != null && InfoListe.DisplayChamp != null)
-            //{
-            //    //pour afficher des colonne de table de referance
-            //    if (obj.GetType().GetProperties().Length > 0 && obj.GetType().GetProperty(InfoListe.DisplayChamp) != null)
-            //    {
-            //        var x = obj.GetType().GetProperty(InfoListe.DisplayChamp).GetValue(obj, null);
-            //        return x;
-            //    }
+            //var obj = property.GetValue(instance);
+            if (b != null && InfoListe != null && InfoListe.DisplayChamp != null)
+            {
+                //pour afficher des colonne de table de referance
+                if (b.GetType().GetProperties().Length > 0 && b.GetType().GetProperty(InfoListe.DisplayChamp) != null)
+                {
+                    var x = b.GetType().GetProperty(InfoListe.DisplayChamp).GetValue(b, null);
+                    return x;
+                }
+            }
             //    //pour afficher les collection
             //    if (obj.GetType().GetProperties().Length > 0)
             //    {

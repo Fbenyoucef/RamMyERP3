@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MyErp.MyTagHelpers;
 using RamMyERP3.DataContext;
 using RamMyERP3.Helpers.Entite;
 using RamMyERP3.Models;
@@ -26,6 +27,7 @@ namespace RamMyERP3.Controllers
         }
         public ViewResult DetailsReferenceTable(string tableName)
         {
+            List<ProprieteInfos> listPrpInfos = new List<ProprieteInfos>();
             // Type typeTable = Type.GetType("RamMyERP3.Models." + tableName);
             var typeTable = (from type in AppDomain.CurrentDomain.GetAssemblies()
                         .SelectMany(assembly => assembly.GetTypes().Where(e => e.Name == tableName))
@@ -33,6 +35,27 @@ namespace RamMyERP3.Controllers
                              select type).FirstOrDefault();
             var ListeData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
             //var testville = _context.r_ville.Include(p => p.R_PAYS).ToList();
+            var customattr = typeTable.GetCustomAttribute<FonctionAttribute>();
+            if(customattr.TableLiee!=null)
+            {
+                //string tableLiee = customattr.TableLiee;
+                var ListeDataLiee = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(customattr.TableLiee).GetValue(_context)).ToList();
+
+            }
+
+            foreach (var item in typeTable.GetProperties())
+            {
+                ProprieteInfos prpInfos = new ProprieteInfos();
+                prpInfos.Nom = item.Name;
+                prpInfos.Type = item.PropertyType;
+                var testt = item.GetCustomAttributes<ListerAttribute>().FirstOrDefault();
+                if(testt != null && testt.Cacher)
+                {
+                    prpInfos.Visibilite = true;
+                }
+                prpInfos.Originale = item;
+                listPrpInfos.Add(prpInfos);
+            }
             ReferenceModel referenceModel = new ReferenceModel();
             referenceModel.TypeClass = typeTable;
             referenceModel.listeValeur = new List<object>(ListeData);

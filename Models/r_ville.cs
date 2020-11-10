@@ -1,16 +1,18 @@
-﻿using RamMyERP3.Helpers.Entite;
+﻿using MyErp.MyTagHelpers;
+using RamMyERP3.Helpers.Entite;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace RamMyERP3.Models
 {
-    [Fonction("FI", "Villes")]
+    [Fonction("FI", "Villes", "r_pays")]
     public class r_ville : IReferenceTable
     {
         [Display(Name = "Id")]
         [Key()]
         public int ID { get; set; }
         [Display(Name = "Pays")]
+        [Lister(Cacher =true)]
         public int R_PAYSID { get; set; }
         [Display(Name = "Nom")]
         public string NOM { get; set; }
@@ -27,7 +29,8 @@ namespace RamMyERP3.Models
 
         [Display(Name = "Code Postal")]
         public int CODE_POSTAL { get; set; }
-        [MyErp.MyTagHelpers.Lister(IsList = true)]
+        [Lister(IsList = true,DisplayChamp = "NOM")]
+        [Display(Name = "Pays")]
         public r_pays R_PAYS { get; set; }
     }
 }

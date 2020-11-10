@@ -1,9 +1,87 @@
-﻿@model RamMyERP3.Controllers.ReferenceModel
+﻿@using Newtonsoft.Json
+@using MyErp.MyTagHelpers;
+@{
+    @model RamMyERP3.Controllers.ReferenceModel
+}
 
-<lister Items="Model.listeValeur" TypeClass="Model.TypeClass"></lister>
+@*<lister Items="Model.listeValeur" TypeClass="Model.TypeClass"></lister>*@
 
-@section Scripts {
-    <script>
-        
+
+<div class="pcoded-inner-content">
+    <div class="main-body">
+        <div class="page-wrapper">
+            <div class="page-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <!-- Bar des bouttons d'enregistrement-->
+                        <Navigate-custome fonction="Lister" breadcrumb1="FonctionFixe" breadcrumb2="Lister"
+                                          afficher-ajax-bouton-action="true"
+                                          fonction-ajouter-ajax="makeRowAdd()"
+                                          fonction-enregistrer-ajax="envoyerDonnees()"></Navigate-custome>
+                        <!--Contenu-->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Liste des catégories</h5>
+                                <span></span>
+                                <div class="card-header-right">
+                                    <ul class="list-unstyled card-option">
+                                        <li><i class="feather icon-maximize full-card"></i></li>
+                                        <li><i class="feather icon-minus minimize-card"></i></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!--Table-->
+                            <div class="card-block">
+                                <div class="dt-responsive table-responsive">
+                                    <table id="tableReference" class="ui celled table table-bordered dataTable no-footer" width="100%">
+                                        <thead style="background-color: mediumseagreen; color: white;">
+                                            <tr>
+                                                <th></th>
+                                                <th>Action</th>
+                                                @foreach (var item in Model.TypeClass.GetProperties())
+                                                {
+                                                    <th>@item.Name</th>
+                                                }
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles{
+    <!--DataTable-->
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    @*<link rel="stylesheet" type="text/css" href="~/files/assets/pages/data-table/css/buttons.dataTables.min.css">*@
+
+}
+
+@section Scripts{
+    <script src="~/files/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/files/bower_components/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/files/assets/pages/data-table/extensions/row-reorder/js/dataTables.rowReorder.min.js"></script>
+    <script type="text/javascript">
+        var decodeHTML = function (html) {
+            var txt = document.createElement('textarea');
+            txt.innerHTML = html;
+            return txt.value;
+        };
+        /**
+         * Serialiser la liste a utiliser dans le JS de la page
+         */
+        //var test = @Model.TypeClass.GetProperties().Select(n => n.Name);
+        var listproperties[];
+        var properties = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.TypeClass.GetProperties().Select(n => n.Name))'));
+      
+            var listeDonnees = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.listeValeur)'));
     </script>
+    <script src="~/js/my_data_table.js"></script>
+    <script src="~/js/detailsReferenceTable.js"></script>
 }
