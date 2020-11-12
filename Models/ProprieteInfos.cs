@@ -8,7 +8,7 @@ namespace RamMyERP3.Models
         public string Nom { get; set; }
         public Type Type { get; set; }
         public bool Visibilite { get; set; }
+        public bool IsReadOnly { get; set; }
         public PropertyInfo Originale { get; set; }
-
     }
 }

@@ -7,7 +7,8 @@ namespace RamMyERP3.DataContext
     {
         public MyContext()
         {
-
+            r_absence_type.AsNoTracking();
+            r_affaire_type.AsNoTracking();
         }
 
         public MyContext(DbContextOptions opt) : base(opt) { }

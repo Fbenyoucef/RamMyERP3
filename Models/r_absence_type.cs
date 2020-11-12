@@ -10,7 +10,7 @@ namespace RamMyERP3.Models
     {
         [Display(Name = "Id")]
         [Key()]
-        [Lister(Cacher = true)]
+        [Lister(Cacher = true, IsReadOnly = true)]
         public int ID { get; set; }
         [Display(Name = "Nom")]
         public string NOM { get; set; }

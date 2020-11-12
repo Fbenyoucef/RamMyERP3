@@ -33,7 +33,7 @@ namespace MyErp.MyTagHelpers
         //Définir le type d'objet dans la collection
         public Type TypeObjet { get; set; }
         public bool Cacher { get; set; }
-
+        public bool IsReadOnly { get; set; }
     }
 
 }

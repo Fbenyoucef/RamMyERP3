@@ -4,7 +4,7 @@ namespace RamMyERP3.Helpers.Entite
 {
     public class FonctionAttribute : Attribute
     {
-        public FonctionAttribute(string fonction, string nomTable, string tableLiee=null)
+        public FonctionAttribute(string fonction, string nomTable, string tableLiee = null)
         {
             Fonction = fonction;
             NomTable = nomTable;

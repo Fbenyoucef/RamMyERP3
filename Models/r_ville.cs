@@ -10,9 +10,10 @@ namespace RamMyERP3.Models
     {
         [Display(Name = "Id")]
         [Key()]
+        [Lister(Cacher = true, IsReadOnly = true)]
         public int ID { get; set; }
         [Display(Name = "Pays")]
-        [Lister(Cacher =true)]
+        //[Lister(Cacher =true)]
         public int R_PAYSID { get; set; }
         [Display(Name = "Nom")]
         public string NOM { get; set; }
@@ -29,7 +30,7 @@ namespace RamMyERP3.Models
 
         [Display(Name = "Code Postal")]
         public int CODE_POSTAL { get; set; }
-        [Lister(IsList = true,DisplayChamp = "NOM")]
+        [Lister(IsList = true, DisplayChamp = "NOM", Cacher = true)]
         [Display(Name = "Pays")]
         public r_pays R_PAYS { get; set; }
     }

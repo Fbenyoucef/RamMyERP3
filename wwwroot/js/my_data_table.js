@@ -440,7 +440,7 @@ var default_my_data_table = {
         this.dataList[index] = newRow;
         //this.makeRowEditable(index);
         this.reDraw();
-//        this.table.page('last').draw('page');
+        //        this.table.page('last').draw('page');
 
         //this.table.rowReorder.disable();
     },
@@ -797,5 +797,19 @@ function myDataTableFactory(config) {
     return datatable;
 }
 
+function envoyerDonnees() {
+    var testresult = JSON.stringify(table.getData());
+    //var testresult = JSON.stringify("test send data");
+
+    //var donnees = {table.getData();
+    $.ajax({
+
+        url: "/Reference/Ajouter",
+        type: 'POST',
+        data: { listeData: testresult, tableName: tableName }
+
+    });
+    var rr = 0;
+}
 
 

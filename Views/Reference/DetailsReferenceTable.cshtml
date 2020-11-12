@@ -38,9 +38,9 @@
                                             <tr>
                                                 <th></th>
                                                 <th>Action</th>
-                                                @foreach (var item in Model.TypeClass.GetProperties())
+                                                @foreach (var item in Model.TypeClass)
                                                 {
-                                                    <th>@item.Name</th>
+                                                    <th>@item.Nom</th>
                                                 }
                                             </tr>
                                         </thead>
@@ -76,12 +76,25 @@
         /**
          * Serialiser la liste a utiliser dans le JS de la page
          */
-        //var test = @Model.TypeClass.GetProperties().Select(n => n.Name);
-        var listproperties[];
-        var properties = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.TypeClass.GetProperties().Select(n => n.Name))'));
-      
-            var listeDonnees = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.listeValeur)'));
+        //var test = @Model.TypeClass.Select(n => n.Nom);
+        var tableName = "@ViewData["tableName"]";
+        var properties = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.TypeClass)'));
+        var listeTableLiee = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.ListeTablesLiees)'));
+        var listeDonnees = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.listeValeur)'));
     </script>
     <script src="~/js/my_data_table.js"></script>
     <script src="~/js/detailsReferenceTable.js"></script>
+
+        @*<script type="text/javascript">
+            //$(document).ready(function () {
+            //    envoyerDonnees();
+            //});
+            //function envoyerDonnees() {
+            //    $.ajax({
+            //        url: "/Reference/Ajouter",
+            //        type: 'POST',
+            //        data: listeDonnees
+            //    });
+            //}
+        </script>*@
 }

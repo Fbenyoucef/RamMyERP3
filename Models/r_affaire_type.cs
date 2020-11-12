@@ -10,20 +10,36 @@ namespace RamMyERP3.Models
     {
         [Display(Name = "Id")]
         [Key()]
-        [Lister(Cacher =true)]
+        [Lister(Cacher = true, IsReadOnly = true)]
         public int ID { get; set; }
+
+
         [Display(Name = "Nom")]
         public string NOM { get; set; }
+
+
         [Display(Name = "Code")]
         public string CODE { get; set; }
+
+
         [Display(Name = "Date Création")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        [Lister(IsReadOnly = true)]
         public DateTime? DATE_CREATION { get; set; }
+
+
+        [Lister(IsReadOnly = true)]
         [Display(Name = "Date Modification")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DATE_MODIFICATION { get; set; }
+
+
+        [Lister(IsReadOnly = true)]
         [Display(Name = "Utilisateur Modification")]
         public string UTILISATEUR_MODIFICATION { get; set; }
+
+
+        [Lister(IsReadOnly = true)]
         [Display(Name = "Utilisateur Création")]
         public string UTILISATEUR_CREATION { get; set; }
     }
