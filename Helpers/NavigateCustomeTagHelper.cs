@@ -122,7 +122,7 @@ namespace RamMyERP3.Helpers
 
                                     // Afficher le lien parent
                                     "<li class=\"breadcrumb-item\">" +
-                                        $"<a href=\"/" + Breadcrumb1 + "/" + "Lister" + "\">" + Breadcrumb1 + "</a>" +
+                                        $"<a href=\"/" + "Reference/Index" + "\">" + Breadcrumb1 + "</a>" +
                                     "</li>" +
 
                                     // Afficher le lien fils

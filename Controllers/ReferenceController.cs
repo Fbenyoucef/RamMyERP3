@@ -36,6 +36,12 @@ namespace RamMyERP3.Controllers
                         .SelectMany(assembly => assembly.GetTypes().Where(e => e.Name == tableName))
                              where typeof(IReferenceTable).IsAssignableFrom(type)
                              select type).FirstOrDefault();
+            string displayTableName = string.Empty;
+            var fonction = typeTable.GetCustomAttribute(typeof(FonctionAttribute));
+            if (fonction.GetType().GetProperties().Count() > 1)
+                displayTableName = fonction.GetType().GetProperties()[1].GetValue(fonction).ToString();
+            else
+                displayTableName = tableName;
 
             var ListeData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
 
@@ -80,6 +86,7 @@ namespace RamMyERP3.Controllers
             // Affecter le titre de la vue
             ViewData["title"] = "Home Page";
             ViewData["tableName"] = tableName;
+            ViewData["displayTableName"] = displayTableName;
             // Afficher la vue
             return View(referenceModel);
         }

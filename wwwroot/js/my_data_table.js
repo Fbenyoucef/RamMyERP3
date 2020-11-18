@@ -440,7 +440,7 @@ var default_my_data_table = {
         this.dataList[index] = newRow;
         //this.makeRowEditable(index);
         this.reDraw();
-        //        this.table.page('last').draw('page');
+        this.table.page('last').draw('page');
 
         //this.table.rowReorder.disable();
     },

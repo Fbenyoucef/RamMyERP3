@@ -21,7 +21,7 @@ using Path = System.IO.Path;
 
 namespace RamMyERP3.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class RamsController : Controller
     {
         #region Attributs

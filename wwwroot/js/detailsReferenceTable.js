@@ -52,7 +52,7 @@ $(document).ready(function () {
 
     if (properties) {
         columnsTablePropeties.push(
-            {
+            {               
                 "data": null,
                 "render": function () {
                     return '<label class="fa fa-bars icon" style="font-size: small;MARGIN-TOP: 10px;"></label>';
@@ -106,6 +106,7 @@ $(document).ready(function () {
             }
 
             var celluleTablePropeties = {
+                "title": properties[i].NomAfficher,
                 "data": properties[i].Nom + ".value", //"Nom"+".value" = "Nom.value"
                 "defaultContent": ""
             }
