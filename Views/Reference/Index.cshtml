@@ -30,7 +30,7 @@
         <div class="list-group elementList col-xl-3 col-md-6" data-idReference="@elt.Key" style="display:none;margin-left:20px">
             @foreach (var item in elt.Value)
             {
-                <a class="list-group-item list-group-item-action" href="~/Reference/DetailsReferenceTable?tableName=@item">@item</a>
+                <a class="list-group-item list-group-item-action" href="~/Reference/DetailsReferenceTable?tableName=@item.TableName">@item.DisplayTableName</a>
             }
         </div>
 }

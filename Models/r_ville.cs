@@ -19,15 +19,16 @@ namespace RamMyERP3.Models
         public string NOM { get; set; }
         [Display(Name = "Code")]
         public string CODE { get; set; }
+        [Lister(IsReadOnly = true)]
         [Display(Name = "Date Création")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DATE_CREATION { get; set; }
+        [Lister(IsReadOnly = true)]
         [Display(Name = "Date Modification")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DATE_MODIFICATION { get; set; }
         [Display(Name = "Utilisateur Modification")]
         public string UTILISATEUR_MODIFICATION { get; set; }
-
         [Display(Name = "Code Postal")]
         public int CODE_POSTAL { get; set; }
         [Lister(IsList = true, DisplayChamp = "NOM", Cacher = true)]

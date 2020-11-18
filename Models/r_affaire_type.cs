@@ -34,12 +34,12 @@ namespace RamMyERP3.Models
         public DateTime? DATE_MODIFICATION { get; set; }
 
 
-        [Lister(IsReadOnly = true)]
+        //[Lister(IsReadOnly = true)]
         [Display(Name = "Utilisateur Modification")]
         public string UTILISATEUR_MODIFICATION { get; set; }
 
 
-        [Lister(IsReadOnly = true)]
+        //[Lister(IsReadOnly = true)]
         [Display(Name = "Utilisateur Création")]
         public string UTILISATEUR_CREATION { get; set; }
     }

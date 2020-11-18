@@ -1,11 +1,8 @@
 ﻿@using Newtonsoft.Json
-@using MyErp.MyTagHelpers;
+
 @{
-    @model RamMyERP3.Controllers.ReferenceModel
+    @model ReferenceModel
 }
-
-@*<lister Items="Model.listeValeur" TypeClass="Model.TypeClass"></lister>*@
-
 
 <div class="pcoded-inner-content">
     <div class="main-body">
@@ -60,6 +57,8 @@
     <!--DataTable-->
     <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
     @*<link rel="stylesheet" type="text/css" href="~/files/assets/pages/data-table/css/buttons.dataTables.min.css">*@
+    <!-- Notification.css -->
+    <link rel="stylesheet" type="text/css" href="~/files/assets/pages/notification/notification.css">
 
 }
 
@@ -67,6 +66,8 @@
     <script src="~/files/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="~/files/bower_components/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
     <script src="~/files/assets/pages/data-table/extensions/row-reorder/js/dataTables.rowReorder.min.js"></script>
+    <!-- notification js -->
+    <script type="text/javascript" src="~/files/assets/js/bootstrap-growl.min.js"></script>
     <script type="text/javascript">
         var decodeHTML = function (html) {
             var txt = document.createElement('textarea');
@@ -84,17 +85,5 @@
     </script>
     <script src="~/js/my_data_table.js"></script>
     <script src="~/js/detailsReferenceTable.js"></script>
-
-        @*<script type="text/javascript">
-            //$(document).ready(function () {
-            //    envoyerDonnees();
-            //});
-            //function envoyerDonnees() {
-            //    $.ajax({
-            //        url: "/Reference/Ajouter",
-            //        type: 'POST',
-            //        data: listeDonnees
-            //    });
-            //}
-        </script>*@
+    <script type="text/javascript" src="~/files/assets/pages/notification/notification.js"></script>
 }

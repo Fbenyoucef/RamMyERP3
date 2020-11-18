@@ -5,6 +5,28 @@ function makeRowAdd() {
     table.makeRowAdd();
 }
 
+function envoyerDonnees() {
+    var result = JSON.stringify(table.getData());
+
+    $.ajax({
+
+        url: "/Reference/Ajouter",
+        type: 'POST',
+        data: { listeData: result, tableName: tableName }
+
+    }).done(function (response) {
+        var titre = response.titre;
+        var message = response.responseText;
+        var typeReponse = response.success == false ? "danger" : "success";
+        // Afficher une notification
+        notify(titre, message, typeReponse);
+        if (response.redirect != undefined && response.redirect != '') {
+            setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName+''; }, 3000);
+        }
+    });
+
+}
+
 $(document).ready(function () {
     var ligneVide = {};
     var columnsPropeties = [];
@@ -129,4 +151,19 @@ $(document).ready(function () {
     table.table.columns(columnsTableVisibility).visible(false);
 
     table.reDraw();
+
+
+
+
+    $('.notifications').on('click', function (e) {
+        e.preventDefault();
+        var nFrom = $(this).attr('data-from');
+        var nAlign = $(this).attr('data-align');
+        var nIcons = $(this).attr('data-icon');
+        var nType = $(this).attr('data-type');
+        var nAnimIn = $(this).attr('data-animation-in');
+        var nAnimOut = $(this).attr('data-animation-out');
+
+        notify(nFrom, nAlign, nIcons, nType, nAnimIn, nAnimOut);
+    });
 });
