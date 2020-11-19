@@ -11,14 +11,14 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <!-- Bar des bouttons d'enregistrement-->
-                        <Navigate-custome fonction="Lister"  breadcrumb1="Tables de références"
+                        <Navigate-custome fonction="Lister"  breadcrumb1="Tables de références" breadcrumb2=@ViewData["displayTableName"]
                                           afficher-ajax-bouton-action="true"
                                           fonction-ajouter-ajax="makeRowAdd()"
                                           fonction-enregistrer-ajax="envoyerDonnees()"></Navigate-custome>
                         <!--Contenu-->
                         <div class="card">
                             <div class="card-header">
-                                <h3>@ViewData["displayTableName"]</h3>
+                                <h3></h3>
                                 <span></span>
                                 <div class="card-header-right">
                                     <ul class="list-unstyled card-option">
@@ -81,9 +81,11 @@
         var tableName = "@ViewData["tableName"]";
         var properties = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.TypeClass)'));
         var listeTableLiee = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.ListeTablesLiees)'));
-        var listeDonnees = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.listeValeur)'));
+        //var listeDonnees = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.listeValeur)'));
+        var listeDonnees = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.listeValeur, new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" })'));
     </script>
     <script src="~/js/my_data_table.js"></script>
+    <script src="~/js/defaultConfigDataTable.js"></script>
     <script src="~/js/detailsReferenceTable.js"></script>
     <script type="text/javascript" src="~/files/assets/pages/notification/notification.js"></script>
 }

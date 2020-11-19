@@ -11,5 +11,6 @@ namespace RamMyERP3.Models
         public bool Visibilite { get; set; }
         public bool IsReadOnly { get; set; }
         public PropertyInfo Originale { get; set; }
+        public string NumericOrString { get; set; }
     }
 }

@@ -107,25 +107,11 @@ $(document).ready(function () {
 
             var celluleTablePropeties = {
                 "title": properties[i].NomAfficher,
-                "data": properties[i].Nom + ".value", //"Nom"+".value" = "Nom.value"
+                "data": properties[i].Nom + ".value",
+                "className": allLists[properties[i].Nom] == undefined ? properties[i].NumericOrString : "text-left",
                 "defaultContent": ""
             }
             columnsTablePropeties.push(celluleTablePropeties);
-
-
-            //{
-            //    cell: 'Poste',
-            //        type: inputType.SELECT,
-            //            property: 'Poste',
-            //                classes: 'form-control',
-            //                    name: '',
-            //                        list: {
-            //        name: 'postesListe',
-            //            selectionKey: 'Poste',
-            //                displayMember: 'Nom',
-            //                    valueMember: 'Id'
-            //    }
-            //}
         }
     }
 
@@ -138,7 +124,9 @@ $(document).ready(function () {
     };
 
     table = myDataTableFactory(config);
+
     table.fillData();
+
     table.table = $('#tableReference').DataTable({
         "data": table.initialData,
         "columns": columnsTablePropeties,
@@ -152,9 +140,6 @@ $(document).ready(function () {
     table.table.columns(columnsTableVisibility).visible(false);
 
     table.reDraw();
-
-
-
 
     $('.notifications').on('click', function (e) {
         e.preventDefault();

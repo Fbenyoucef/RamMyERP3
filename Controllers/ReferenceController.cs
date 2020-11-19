@@ -64,12 +64,43 @@ namespace RamMyERP3.Controllers
                 }
             }
 
+
+            foreach (var item in ListeData)
+            {
+                foreach (var item1 in item.GetType().GetProperties())
+                {
+                    if (item1.PropertyType == typeof(DateTime?))
+                    {
+                        var attribute = item1.GetCustomAttribute<DisplayFormatAttribute>();
+                        if (attribute != null)
+                        {
+                            var value = item1.GetValue(item, null);
+                            var currentType = item1.PropertyType;
+                            var tt = string.Format(attribute.DataFormatString, value);
+                        }
+                    }
+                    //ProprieteInfos prpInfos = new ProprieteInfos();
+                    //prpInfos.Nom = item1.Name;
+                    //prpInfos.Type = item1.PropertyType;
+                    //prpInfos.NomAfficher = GetPropertyName(item1);
+                    //var testt = item1.GetCustomAttributes<ListerAttribute>().FirstOrDefault();
+                    //if (testt != null)
+                    //{
+                    //    prpInfos.Visibilite = testt.Cacher;
+                    //    prpInfos.IsReadOnly = testt.IsReadOnly;
+                    //}
+                    ////prpInfos.Originale = item;
+                    //listPrpInfos.Add(prpInfos);
+                }
+            }
+
             foreach (var item in typeTable.GetProperties())
             {
                 ProprieteInfos prpInfos = new ProprieteInfos();
                 prpInfos.Nom = item.Name;
                 prpInfos.Type = item.PropertyType;
                 prpInfos.NomAfficher = GetPropertyName(item);
+                prpInfos.NumericOrString = IsNumericOrStringType(item.PropertyType);
                 var testt = item.GetCustomAttributes<ListerAttribute>().FirstOrDefault();
                 if (testt != null)
                 {
@@ -90,7 +121,28 @@ namespace RamMyERP3.Controllers
             // Afficher la vue
             return View(referenceModel);
         }
-
+        public static string IsNumericOrStringType( Type o)
+        {
+            switch (Type.GetTypeCode(o))
+            {
+                case TypeCode.Byte:
+                case TypeCode.SByte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.Decimal:
+                case TypeCode.Double:
+                case TypeCode.Single:
+                    return "text-right";
+                case TypeCode.String:
+                    return "text-left";
+                default:
+                    return "text-center";
+            }
+        }
         private string GetPropertyName(PropertyInfo property)
         {
             var attribute = property.GetCustomAttribute<DisplayAttribute>();
@@ -102,6 +154,18 @@ namespace RamMyERP3.Controllers
 
             return property.Name;
         }
+        private object GetPropertyDisplayFormat(PropertyInfo property, object item)
+        {
+            var attribute = property.GetCustomAttribute<DisplayFormatAttribute>();
+
+            if (attribute != null)
+            {
+                return attribute.DataFormatString;
+            }
+
+            return property.GetValue(item);
+        }
+
         public ReferenceDomaine ListTable()
         {
             ReferenceDomaine reference = new ReferenceDomaine();
@@ -144,7 +208,8 @@ namespace RamMyERP3.Controllers
             var listGeneric = CreateGenericList(typeTable);
             Type protocolType = (listGeneric.GetType());
 
-            IEnumerable<IReferenceTable> data = (IEnumerable<IReferenceTable>)JsonConvert.DeserializeObject(listeData, protocolType);
+            IEnumerable<IReferenceTable> data = (IEnumerable<IReferenceTable>)JsonConvert.DeserializeObject(listeData, protocolType,
+                new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" });
             List<IReferenceTable> originaleData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
 
             //var x2 = (IEnumerable<IReferenceTable>)xx;
