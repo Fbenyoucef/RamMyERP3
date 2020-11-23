@@ -7,6 +7,8 @@
     DEFAULT_BUTTONS: 'DEFAULT_BUTTONS',
     EDIT_BUTTONS: 'EDIT_BUTTONS'
 };
+
+var validateChanges = false;
 function clone(item) {
     if (!item) { return item; } // null, undefined values check
 
@@ -418,6 +420,7 @@ var default_my_data_table = {
         }
         this.dataList[index] = row;
         this.reDraw();
+        validateChanges = false;
         //this.table.rowReorder.disable();
     },
 
@@ -465,6 +468,7 @@ var default_my_data_table = {
             this.reDraw();
 
         }, 5);
+        validateChanges = true;
     },
 
     cancelRowEditable: function (index) {
@@ -480,6 +484,7 @@ var default_my_data_table = {
         row.metadata.inEdit = false;
         this.dataList[index] = row;
         this.reDraw();
+        validateChanges = false;
 
     },
 
@@ -504,6 +509,7 @@ var default_my_data_table = {
         //this.refreshData();
         //this.reDraw();
         this.reDraw();
+        validateChanges = true;
     },
 
     cancelRowAdd: function (index) {
@@ -513,7 +519,7 @@ var default_my_data_table = {
 
         //this.reDraw();
         this.reDrawRow(index, true);
-
+        validateChanges = false;
     },
 
     isNew: function () {
@@ -531,6 +537,7 @@ var default_my_data_table = {
             this.refreshData();
             this.reDraw();
         }
+        validateChanges = true;
     },
 
     switchToEdit: function (row, property, index, reverse = false) {

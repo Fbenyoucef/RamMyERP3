@@ -7,23 +7,32 @@ function makeRowAdd() {
 
 function envoyerDonnees() {
     var result = JSON.stringify(table.getData());
+    var testt = validateChanges;
+    if (validateChanges) {
+        $.ajax({
 
-    $.ajax({
+            url: "/Reference/Ajouter",
+            type: 'POST',
+            data: { listeData: result, tableName: tableName }
 
-        url: "/Reference/Ajouter",
-        type: 'POST',
-        data: { listeData: result, tableName: tableName }
+        }).done(function (response) {   
+            var titre = response.titre;
+            var message = response.responseText;
+            var typeReponse = response.success == false ? "danger" : "success";
+            // Afficher une notification
+            notify(titre, message, typeReponse);
+            if (response.redirect != undefined && response.redirect != '') {
+                setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName + ''; }, 3000);
+            }
+        });
+    } else {
+        var titre1 = "";
+        var message1 = "Merci de bien vouloir valider les changements avant la sauvegarde";
+        var typeNotify1 = "danger";
+        notify(titre1, message1, typeNotify1);
+        setTimeout(3000);
+    }
 
-    }).done(function (response) {
-        var titre = response.titre;
-        var message = response.responseText;
-        var typeReponse = response.success == false ? "danger" : "success";
-        // Afficher une notification
-        notify(titre, message, typeReponse);
-        if (response.redirect != undefined && response.redirect != '') {
-            setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName+''; }, 3000);
-        }
-    });
 
 }
 
