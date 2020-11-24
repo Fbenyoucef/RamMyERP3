@@ -121,7 +121,7 @@ namespace RamMyERP3.Controllers
             // Afficher la vue
             return View(referenceModel);
         }
-        public static string IsNumericOrStringType( Type o)
+        public static string IsNumericOrStringType(Type o)
         {
             switch (Type.GetTypeCode(o))
             {
@@ -136,11 +136,11 @@ namespace RamMyERP3.Controllers
                 case TypeCode.Decimal:
                 case TypeCode.Double:
                 case TypeCode.Single:
-                    return "text-right";
+                    return "Numeric";
                 case TypeCode.String:
-                    return "text-left";
+                    return "String";
                 default:
-                    return "text-center";
+                    return "Autres";
             }
         }
         private string GetPropertyName(PropertyInfo property)
@@ -258,12 +258,22 @@ namespace RamMyERP3.Controllers
         private static bool CompareListe(Type typeTable, IReferenceTable elementListData, List<IReferenceTable> originaleData)
         {
             bool elementChanged = false;
-
+            string propetieLiee = string.Empty;
+            var customattr = typeTable.GetCustomAttribute<FonctionAttribute>();
+            if (customattr.TableLiee != null)
+            {
+                propetieLiee = typeTable.GetProperties()
+               .Where(p => p.PropertyType.IsClass == true)
+               .Where(p => p.PropertyType.Assembly.FullName == typeTable.Assembly.FullName)
+               .FirstOrDefault(p => p.Name.ToLower() == customattr.TableLiee.ToLower())?.Name;
+            }
             var itemOriginal = originaleData.Where(e => e.ID == elementListData.ID).FirstOrDefault();
             if (itemOriginal != null)
             {
                 foreach (var prp in typeTable.GetProperties())
                 {
+                    if (propetieLiee == prp.Name)
+                        break;
                     var value1 = elementListData.GetType().GetProperty(prp.Name).GetValue(elementListData);
                     var value2 = itemOriginal.GetType().GetProperty(prp.Name).GetValue(itemOriginal);
                     if (value1 != null && !value1.Equals(value2))

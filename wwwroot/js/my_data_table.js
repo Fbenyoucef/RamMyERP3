@@ -283,7 +283,18 @@ var default_my_data_table = {
         for (var i = 0; i < this.columns.length; i++) {
             var col = this.columns[i];
             var column = Object.assign(this.defaultColumn, col);
-            column.cell = data[col.cell];
+            var resultdata;
+            if (data[col.cell] == undefined) {
+                typedata = properties.filter(e => e.Nom == col.cell);
+                if (typedata[0].NumericOrString == "String")
+                    resultdata = "";
+                else if (typedata[0].NumericOrString == "Autres")
+                    resultdata = "";
+                else
+                    resultdata = 0;
+            } else
+                resultdata = data[col.cell];
+            column.cell = resultdata;
             column.index = index;
             column.original = data[col.cell];
 
@@ -418,8 +429,12 @@ var default_my_data_table = {
             }
 
         }
+
         this.dataList[index] = row;
+        var current = this.table.page();
         this.reDraw();
+        this.table.page(current).draw('page');
+        //this.table.page('previous').draw('page');
         validateChanges = false;
         //this.table.rowReorder.disable();
     },
@@ -463,11 +478,14 @@ var default_my_data_table = {
         this.dataList[index] = row;
         //this.updateRowdata(index);
         //this.addRowData(index);
+        var current = this.table.page();
+
         setTimeout(() => {
             this.reset();
             this.reDraw();
-
+            this.table.page(current).draw('page');
         }, 5);
+
         validateChanges = true;
     },
 
@@ -507,8 +525,8 @@ var default_my_data_table = {
         //this.reDraw();
         //        this.reDrawRow(index);
         //this.refreshData();
-        //this.reDraw();
         this.reDraw();
+        this.table.page('last').draw('page');
         validateChanges = true;
     },
 

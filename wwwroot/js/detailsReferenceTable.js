@@ -15,7 +15,7 @@ function envoyerDonnees() {
             type: 'POST',
             data: { listeData: result, tableName: tableName }
 
-        }).done(function (response) {   
+        }).done(function (response) {
             var titre = response.titre;
             var message = response.responseText;
             var typeReponse = response.success == false ? "danger" : "success";
@@ -61,7 +61,7 @@ $(document).ready(function () {
 
     if (properties) {
         columnsTablePropeties.push(
-            {               
+            {
                 "data": null,
                 "render": function () {
                     return '<label class="fa fa-bars icon" style="font-size: small;MARGIN-TOP: 10px;"></label>';
@@ -117,7 +117,7 @@ $(document).ready(function () {
             var celluleTablePropeties = {
                 "title": properties[i].NomAfficher,
                 "data": properties[i].Nom + ".value",
-                "className": allLists[properties[i].Nom] == undefined ? properties[i].NumericOrString : "text-left",
+                "className": allLists[properties[i].Nom] == undefined ? textAlign(properties[i].NumericOrString) : "text-left",
                 "defaultContent": ""
             }
             columnsTablePropeties.push(celluleTablePropeties);
@@ -132,6 +132,14 @@ $(document).ready(function () {
         lists: allLists,
     };
 
+    function textAlign(numOrString) {
+        if (numOrString == "Numeric")
+            return "text-right";
+        if (numOrString == "String")
+            return "text-left";
+        if (numOrString == "Autres")
+            return "text-center";
+    }
     table = myDataTableFactory(config);
 
     table.fillData();

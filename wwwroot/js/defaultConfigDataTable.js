@@ -11,7 +11,7 @@ $.extend($.fn.dataTable.defaults, {
     "select": true,
     "autoWidth": true,
     "lengthMenu": [[15, 30, 50, 100, -1], [15, 30, 50, 100, "Tout"]],
-    "pageLength": 50,
+    "pageLength": 15,
     "language": {
         "processing": "Traitement en cours...",
         "search": "Recherche",
