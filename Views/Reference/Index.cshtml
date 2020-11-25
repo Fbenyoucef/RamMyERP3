@@ -59,7 +59,7 @@
                 $('.elementList').hide();
                 $('.elementList[data-idReference="' + id + '"]').show();
                 //pour changer la couleur du bouton (Domaine) choisi
-                $(".domaineElement").removeClass("bg-c-green").css("bg-c-yellow");
+                $(".update-card").removeClass("bg-c-green").addClass("bg-c-yellow");
                 var card = $(this).find(".update-card");
                 if (card.hasClass("bg-c-yellow"))
                     card.removeClass("bg-c-yellow").addClass("bg-c-green");
