@@ -1,11 +1,17 @@
 ﻿var table;
-
+var listrowAdd = [];
+var ix = 0;
 // Ajouter une nouvelle ligne
 function makeRowAdd() {
+    table.saveRowEditable();
+    table.saveRowAdd();
     table.makeRowAdd();
+    listrowAdd.push(ix++);
 }
 
 function envoyerDonnees() {
+    table.saveRowEditable();
+    table.saveRowAdd();
     var result = JSON.stringify(table.getData());
     var testt = validateChanges;
     if (validateChanges) {
@@ -153,11 +159,15 @@ $(document).ready(function () {
         ],
         rowReorder: true,
     });
+    $('#tableReference').on('page.dt', function (a, b, c) {
+        table.saveRowEditable();
+        table.saveRowAdd();
+    });
 
     table.table.columns(columnsTableVisibility).visible(false);
 
     table.reDraw();
-
+    table.makeRowEditable();
     $('.notifications').on('click', function (e) {
         e.preventDefault();
         var nFrom = $(this).attr('data-from');

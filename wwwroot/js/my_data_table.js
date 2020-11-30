@@ -176,25 +176,30 @@ var default_my_data_table = {
                                     switch (typeElement) {
                                         case inputType.INPUT:
                                         case inputType.TEXTAREA:
-                                            this.dataList[indexElement][property].data = input.val();
+                                            if (input.val() !== undefined) {
+                                                this.dataList[indexElement][property].data = input.val();
+                                            }
                                             break;
                                         case inputType.SELECT:
-                                            this.dataList[indexElement][property].data = input.val();
-                                            if (row[property].properties.type == inputType.SELECT) {
-                                                if (row[property].properties.list != '') {
-                                                    var listData = this.lists[row[property].properties.list.name].data;
-                                                    for (var i = 0; i < listData.length; i++) {
-                                                        var option = listData[i];
-                                                        var value = this.resolve(row[property].properties.list.valueMember, option);
-                                                        if (value == this.dataList[indexElement][property].data) {
-                                                            this.dataList[indexElement][property].original =
-                                                                this.dataList[indexElement][property].data;
-                                                            var text = this.resolve(row[property].properties.list.displayMember, option);
-                                                            this.dataList[indexElement][property].data = text;
+                                            if (input.val() !== undefined) {
+                                                this.dataList[indexElement][property].data = input.val();
+                                                if (row[property].properties.type == inputType.SELECT) {
+                                                    if (row[property].properties.list != '') {
+                                                        var listData = this.lists[row[property].properties.list.name].data;
+                                                        for (var i = 0; i < listData.length; i++) {
+                                                            var option = listData[i];
+                                                            var value = this.resolve(row[property].properties.list.valueMember, option);
+                                                            if (value == this.dataList[indexElement][property].data) {
+                                                                this.dataList[indexElement][property].original =
+                                                                    this.dataList[indexElement][property].data;
+                                                                var text = this.resolve(row[property].properties.list.displayMember, option);
+                                                                this.dataList[indexElement][property].data = text;
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
+
                                             break;
                                     }
                                     this.dataList[indexElement][property].html =
@@ -234,25 +239,30 @@ var default_my_data_table = {
                                     switch (typeElement) {
                                         case inputType.INPUT:
                                         case inputType.TEXTAREA:
-                                            this.dataList[indexElement][property].data = input.val();
+                                            if (input.val() !== undefined) {
+                                                this.dataList[indexElement][property].data = input.val();
+                                            }
                                             break;
                                         case inputType.SELECT:
-                                            this.dataList[indexElement][property].data = input.val();
-                                            if (row[property].properties.type === inputType.SELECT) {
-                                                if (row[property].properties.list != '') {
-                                                    var listData = this.lists[row[property].properties.list.name].data;
-                                                    for (var i = 0; i < listData.length; i++) {
-                                                        var option = listData[i];
-                                                        var value = this.resolve(row[property].properties.list.valueMember, option);
-                                                        if (value == this.dataList[indexElement][property].data) {
-                                                            this.dataList[indexElement][property].original =
-                                                                this.dataList[indexElement][property].data;
-                                                            var text = this.resolve(row[property].properties.list.displayMember, option);
-                                                            this.dataList[indexElement][property].data = text;
+                                            if (input.val() !== undefined) {
+                                                this.dataList[indexElement][property].data = input.val();
+                                                if (row[property].properties.type === inputType.SELECT) {
+                                                    if (row[property].properties.list != '') {
+                                                        var listData = this.lists[row[property].properties.list.name].data;
+                                                        for (var i = 0; i < listData.length; i++) {
+                                                            var option = listData[i];
+                                                            var value = this.resolve(row[property].properties.list.valueMember, option);
+                                                            if (value == this.dataList[indexElement][property].data) {
+                                                                this.dataList[indexElement][property].original =
+                                                                    this.dataList[indexElement][property].data;
+                                                                var text = this.resolve(row[property].properties.list.displayMember, option);
+                                                                this.dataList[indexElement][property].data = text;
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
+
                                             break;
                                     }
                                     this.dataList[indexElement][property].html =
@@ -421,23 +431,24 @@ var default_my_data_table = {
     },
 
     makeRowEditable: function (index) {
-
-        var row = this.dataList[index];
-        for (const property in row) {
-            if (property != "metadata") {
-                row[property] = this.switchToEdit(row, property, index);
+        for (var i = 0; i < this.dataList.length; i++) {
+            var row = this.dataList[i];
+            for (const property in row) {
+                if (property != "metadata") {
+                    row[property] = this.switchToEdit(row, property, i);
+                }
             }
-
+            this.dataList[i] = row;
+            var current = this.table.page();
+            this.reDraw();
+            this.table.page(current).draw('page');
+            //this.table.page('previous').draw('page');
+            validateChanges = false;
+            //this.table.rowReorder.disable();
         }
-
-        this.dataList[index] = row;
-        var current = this.table.page();
-        this.reDraw();
-        this.table.page(current).draw('page');
-        //this.table.page('previous').draw('page');
-        validateChanges = false;
-        //this.table.rowReorder.disable();
     },
+
+
 
     makeEmpty: function () {
         return this.emptyRow;
@@ -465,28 +476,28 @@ var default_my_data_table = {
 
     saveRowEditable: function (index) {
         /*this.table.rowReorder.enable()*/;
-        var row = this.dataList[index];
-        row.metadata.updateDataFromInputs(index);
-        for (const property in row) {
-            if (Object.prototype.hasOwnProperty.call(row, property)) {
-                if (property != "metadata") {
-                    row[property] = this.switchToEdit(row, property, index, true);
+        for (var i = 0; i < this.dataList.length; i++) {
+            var row = this.dataList[i];
+            row.metadata.updateDataFromInputs(i);
+            for (const property in row) {
+                if (Object.prototype.hasOwnProperty.call(row, property)) {
+                    if (property != "metadata") {
+                        row[property] = this.switchToEdit(row, property, i);
+                    }
                 }
             }
+            //row.metadata.inEdit = false;
+            this.dataList[i] = row;
+            //this.updateRowdata(index);
+            //this.addRowData(index);
+            var current = this.table.page();
+            //setTimeout(() => {
+            //    this.reset();
+            //    this.reDraw();
+            //    this.table.page(current).draw('page');
+            //}, 5);
+            validateChanges = true;
         }
-        row.metadata.inEdit = false;
-        this.dataList[index] = row;
-        //this.updateRowdata(index);
-        //this.addRowData(index);
-        var current = this.table.page();
-
-        setTimeout(() => {
-            this.reset();
-            this.reDraw();
-            this.table.page(current).draw('page');
-        }, 5);
-
-        validateChanges = true;
     },
 
     cancelRowEditable: function (index) {
@@ -508,26 +519,30 @@ var default_my_data_table = {
 
     saveRowAdd: function (index) {
         /*this.table.rowReorder.enable()*/;
-        this.adding = false;
+        for (var i = 0; i < this.dataList.length; i++) {
 
-        var row = this.dataList[index];
-        row.metadata.updateDataFromInputsAfterAdd(index);
-        for (const property in row) {
-            if (Object.prototype.hasOwnProperty.call(row, property)) {
-                if (property != "metadata") {
-                    row[property] = this.switchToEdit(row, property, index, true);
+
+            this.adding = false;
+
+            var row = this.dataList[i];
+            row.metadata.updateDataFromInputsAfterAdd(i);
+            for (const property in row) {
+                if (Object.prototype.hasOwnProperty.call(row, property)) {
+                    if (property != "metadata") {
+                        row[property] = this.switchToEdit(row, property, i);
+                    }
                 }
             }
+            row.metadata.inEdit = false;
+            this.dataList[i] = row;
+            //this.addRowData(index);
+            //this.reDraw();
+            //        this.reDrawRow(index);
+            //this.refreshData();
+            //this.reDraw();
+            //this.table.page('last').draw('page');
+            validateChanges = true;
         }
-        row.metadata.inEdit = false;
-        this.dataList[index] = row;
-        //this.addRowData(index);
-        //this.reDraw();
-        //        this.reDrawRow(index);
-        //this.refreshData();
-        this.reDraw();
-        this.table.page('last').draw('page');
-        validateChanges = true;
     },
 
     cancelRowAdd: function (index) {
@@ -600,6 +615,7 @@ var default_my_data_table = {
         obj.data = this.makeDefaultButtons(element);
         obj.html = this.makeEditButtons(element.metadata.index);
         obj.htmladd = this.makeAddButtons(element.metadata.index);
+        obj.value = unescape(obj.data);
         if (element.metadata.inEdit) {
             obj.value = unescape(obj.html);
         } else {
@@ -781,7 +797,24 @@ var default_my_data_table = {
         s = s.replaceAll('\'', '"');
         return s;
     },
+    makeAllRowsEditable: function () {
+        for (var i = 0; i < this.dataList.length; i++) {
+            var row = this.dataList[i];
+            for (const property in row) {
+                if (property != "metadata") {
+                    row[property] = this.switchToEdit(row, property, i);
+                }
+            }
 
+            this.dataList[i] = row;
+            var current = this.table.page();
+            this.reDraw();
+            this.table.page(current).draw('page');
+            //this.table.page('previous').draw('page');
+            validateChanges = false;
+            //this.table.rowReorder.disable();
+        }
+    },
     reDraw: function (withRefrech = false) {
         if (withRefrech) {
             this.refreshData();

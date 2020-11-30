@@ -2,6 +2,7 @@
 using RamMyERP3.Helpers.Entite;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RamMyERP3.Models
 {
@@ -33,6 +34,7 @@ namespace RamMyERP3.Models
         public int CODE_POSTAL { get; set; }
         [Lister(IsList = true, DisplayChamp = "NOM", Cacher = true)]
         [Display(Name = "Pays")]
+        [NotMapped]
         public r_pays R_PAYS { get; set; }
     }
 }
