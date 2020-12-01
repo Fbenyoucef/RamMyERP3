@@ -561,6 +561,8 @@ var default_my_data_table = {
 
     deleteRow: function (e, index) {
         if (this.isNew(index)) {
+            var row = this.dataList[index];
+            supprimerDonnees(row.ID.data);
             this.adding = false;
             this.dataList.splice(index, 1);
             //this.initialData.splice(index, 1);
@@ -653,9 +655,9 @@ var default_my_data_table = {
     makeDefaultButtons: function (row) {
 
         return `<div class="tabledit-toolbar btn-toolbar" style="text-align: left;"><div class= "btn-group btn-group-sm" style="float: none; padding: 5px;">` +
-            `<a class="tabledit-edit-button btn btn-primary waves-effect waves-light" ` +
-            `style="float: none; margin: 0px; color: white" title="Editer" onclick="window.mydatatables.${this.prefix}.makeRowEditable(${row.metadata.index})" > ` +
-            `<span class="icofont icofont-ui-edit"></span> </a> ` +
+            //`<a class="tabledit-edit-button btn btn-primary waves-effect waves-light" ` +
+            //`style="float: none; margin: 0px; color: white" title="Editer" onclick="window.mydatatables.${this.prefix}.makeRowEditable(${row.metadata.index})" > ` +
+            //`<span class="icofont icofont-ui-edit"></span> </a> ` +
             `<a  class="tabledit-delete-button btn btn-danger waves-effect waves-light" style="float: none; margin: 0px; color: white;" ` +
             `id="deleteBtn" data-id="${row.metadata.getId(row.metadata.index)}"  onclick="window.mydatatables.${this.prefix}.deleteRow(event, ${row.metadata.index})" title="Supprimer">` +
             `<span class="icofont icofont-ui-delete"></span></a></div></div>`;
@@ -664,22 +666,22 @@ var default_my_data_table = {
     makeEditButtons: function (index) {
 
         return `<div class="tabledit-toolbar btn-toolbar" style="text-align: left;"><div class= "btn-group btn-group-sm" style="float: none; padding: 5px;">` +
-            `<a class="tabledit-edit-button btn btn-primary waves-effect waves-light" ` +
-            `style="float: none; margin: 0px; color: white; background-color: #0ac282;" title="Valider" onclick="window.mydatatables.${this.prefix}.saveRowEditable(${index})" > ` +
-            `<span class="icofont icofont-ui-check"></span> </a> ` +
-            `<a class="tabledit-edit-button btn btn-danger waves-effect waves-light" style="float: none; margin: 0px; color: white;" ` +
-            ` title="Annuler" onclick="window.mydatatables.${this.prefix}.cancelRowEditable(${index})">` +
-            `<span class="icofont icofont-ui-close"></span></a></div></div>`;
-
+            //`<a class="tabledit-edit-button btn btn-primary waves-effect waves-light" ` +
+            //`style="float: none; margin: 0px; color: white; background-color: #0ac282;" title="Valider" onclick="window.mydatatables.${this.prefix}.saveRowEditable(${index})" > ` +
+            //`<span class="icofont icofont-ui-check"></span> </a> ` +
+            `<a  class="tabledit-delete-button btn btn-danger waves-effect waves-light alert-confirm" style="float: none; margin: 0px; color: white;" ` +
+            ` title="Supprimer" onclick="window.mydatatables.${this.prefix}.deleteRow(event, ${index})">` +
+            `<span class="icofont icofont-ui-delete"></span></a></div></div>`;
     },
+    //<button type="button" class="btn btn-warning alert-confirm m-b-10" onclick="_gaq.push(['_trackEvent', 'example', 'try', 'alert-confirm']);">Confirm</button>
 
     makeAddButtons: function (index) {
 
         return `<div class="tabledit-toolbar btn-toolbar" style="text-align: left;"><div class= "btn-group btn-group-sm" style="float: none; padding: 5px;">` +
-            `<a class="tabledit-edit-button btn btn-primary waves-effect waves-light" ` +
-            `style="float: none; margin: 0px; color: white" title="Valider" onclick="window.mydatatables.${this.prefix}.saveRowAdd(${index})" > ` +
-            `<span class="icofont icofont-ui-check"></span> </a> ` +
-            `<a class="tabledit-delete-button btn btn-danger waves-effect waves-light" style="float: none; margin: 0px; color: white;" ` +
+            //`<a class="tabledit-edit-button btn btn-primary waves-effect waves-light" ` +
+            //`style="float: none; margin: 0px; color: white" title="Valider" onclick="window.mydatatables.${this.prefix}.saveRowAdd(${index})" > ` +
+            //`<span class="icofont icofont-ui-check"></span> </a> ` +
+            `<a  class="tabledit-delete-button btn btn-danger waves-effect waves-light" style="float: none; margin: 0px; color: white;" ` +
             ` title="Annuler" onclick="window.mydatatables.${this.prefix}.cancelRowAdd(${index})">` +
             `<span class="icofont icofont-ui-close"></span></a></div></div>`;
 

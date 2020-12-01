@@ -255,6 +255,63 @@ namespace RamMyERP3.Controllers
             });
         }
 
+        [HttpPost]
+        public object Supprimer(int id, string tableName)
+        {
+            var typeTable = (from type in AppDomain.CurrentDomain.GetAssemblies()
+                        .SelectMany(assembly => assembly.GetTypes().Where(e => e.Name == tableName))
+                             where typeof(IReferenceTable).IsAssignableFrom(type)
+                             select type).FirstOrDefault();
+            var listGeneric = CreateGenericList(typeTable);
+            Type protocolType = (listGeneric.GetType());
+
+            //IEnumerable<IReferenceTable> data = (IEnumerable<IReferenceTable>)JsonConvert.DeserializeObject(listeData, protocolType,
+            //    new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" });
+            List<IReferenceTable> originaleData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
+
+            //var x2 = (IEnumerable<IReferenceTable>)xx;
+
+            //var ids = data.Select(e => e.ID);
+            var idsDB = originaleData.Select(e => e.ID);
+            var idToDelete = idsDB.Contains(id);
+            //foreach (var item in data)
+            //{
+            //    if (CompareListe(typeTable, item, originaleData))
+            //    {
+            //        DetachAllEntities(_context);
+            //        _context.Update(item);
+            //        _context.SaveChanges();
+            //    }
+            //}
+            if(idToDelete)
+            { 
+                var elementToDelete = originaleData.Where(e => e.ID == id).FirstOrDefault();
+                DetachAllEntities(_context);
+                try
+                {
+                    _context.Remove(elementToDelete);
+                    _context.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        titre = tableName.ToUpper(),
+                        responseText = "Vous ne pouvez pas supprimer cette ligne!",
+                        redirect = nameof(DetailsReferenceTable)
+                    });
+                }
+            }
+            return Json(new
+            {
+                success = true,
+                titre = "",
+                responseText = "Table MAJ avec succès",
+                redirect = nameof(DetailsReferenceTable)
+            });
+        }
+
         private static bool CompareListe(Type typeTable, IReferenceTable elementListData, List<IReferenceTable> originaleData)
         {
             bool elementChanged = false;

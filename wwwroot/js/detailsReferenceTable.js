@@ -42,6 +42,37 @@ function envoyerDonnees() {
 
 }
 
+function supprimerDonnees(idTodelete) {
+   
+    
+    if (true) {
+        $.ajax({
+
+            url: "/Reference/Supprimer",
+            type: 'POST',
+            data: { id: idTodelete, tableName: tableName }
+
+        }).done(function (response) {
+            var titre = response.titre;
+            var message = response.responseText;
+            var typeReponse = response.success == false ? "danger" : "success";
+            // Afficher une notification
+            notify(titre, message, typeReponse);
+            if (response.redirect != undefined && response.redirect != '') {
+                setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName + ''; }, 3000);
+            }
+        });
+    } else {
+        var titre1 = "";
+        var message1 = "Merci de bien vouloir valider les changements avant la sauvegarde";
+        var typeNotify1 = "danger";
+        notify(titre1, message1, typeNotify1);
+        setTimeout(3000);
+    }
+
+
+}
+
 $(document).ready(function () {
     var ligneVide = {};
     var columnsPropeties = [];
