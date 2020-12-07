@@ -72,8 +72,7 @@ function supprimerDonnees(idTodelete) {
         notify(titre1, message1, typeNotify1);
         setTimeout(3000);
     }
-
-
+    
 }
 
 $(document).ready(function () {

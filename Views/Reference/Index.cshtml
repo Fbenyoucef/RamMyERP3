@@ -1,50 +1,66 @@
 ﻿@model ReferenceDomaine
 
 
-<div class="row" id="Domaine">
+<div class="row">
+    <div class="col-md-12 col-xl-7 ">
+        <div class="row" id="Domaine">
+            @foreach (var elt in Model.ReferenceTable)
+            {
 
-    @foreach (var elt in Model.ReferenceTable)
-    {
-        <div class="col-xl-3 col-md-6 domaineElement" style="margin-top:20px" data-idReference="@elt.Key">
-            <div class="testcolor">
-                <div class="card bg-c-yellow update-card">
-                    <div class="card-block t1">
-                        <div class="row align-items-end">
-                            <div class="col-8">
-                                <h6 class="text-white m-b-0">Fonction</h6>
-                                <h4 class="text-white">@elt.Key </h4>
+                <div class="col-md-3 col-xl-6 domaineElement" style="margin-top:20px" data-idReference="@elt.Key">
+                    <div class="testcolor">
+                        <div class="card bg-c-yellow update-card">
+                            <div class="card-block t1">
+                                <div class="row align-items-end">
+                                    <div class="col-6">
+                                        <h6 class="text-white m-b-0">Fonction</h6>
+                                        <h4 class="text-white">@elt.Key </h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer t1">
+                                <p class="text-white m-b-0"><i class="fa fa-list-ol"></i>  @elt.Value.Count Tables de références</p>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer t1">
-                        <p class="text-white m-b-0"><i class="fa fa-list-ol"></i>  @elt.Value.Count Tables de références</p>
-                    </div>
                 </div>
-            </div>
+
+            }
         </div>
-    }
+    </div>
+    <div class="col-md-12 col-xl-5 ">
+        
+        <div class="card app-design border-left" style="margin-top:20px; border-left:solid">
+            
+            <div class="card-block">
+                @foreach (var elt in Model.ReferenceTable)
+                {
+                    <div class="list-group elementList col-md-3 col-xl-5" data-idReference="@elt.Key" style="display:none;margin-left:20px">
+                        @foreach (var item in elt.Value)
+                        {
+                            <a class="list-group-item list-group-item-action" href="~/Reference/DetailsReferenceTable?tableName=@item.TableName">@item.DisplayTableName</a>
+                        }
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
 </div>
 
-@foreach (var elt in Model.ReferenceTable)
-{
-    <div class="list-group elementList col-xl-3 col-md-6" data-idReference="@elt.Key" style="display:none;margin-left:20px">
-        @foreach (var item in elt.Value)
-        {
-            <a class="list-group-item list-group-item-action" href="~/Reference/DetailsReferenceTable?tableName=@item.TableName">@item.DisplayTableName</a>
-        }
-    </div>
-}
+
+
 
 
 @section Styles {
     <!-- list css -->
     <link rel="stylesheet" type="text/css" href="~/files/assets/pages/list-scroll/list.css">
     <link rel="stylesheet" type="text/css" href="~/files/bower_components/stroll/css/stroll.css">
-    <style>
-        .domaineElement:first-child {
-            margin-left: 20px;
-        }
-    </style>
+    @*<style>
+            .domaineElement:first-child {
+                margin-left: 20px;
+            }
+        </style>*@
 }
 
 @section Scripts {

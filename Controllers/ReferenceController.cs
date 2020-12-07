@@ -305,7 +305,7 @@ namespace RamMyERP3.Controllers
                         success = false,
                         titre = tableName.ToUpper(),
                         responseText = "Vous ne pouvez pas supprimer cette ligne!",
-                        redirect = nameof(DetailsReferenceTable)
+                        redirect = ""//nameof(DetailsReferenceTable)
                     });
                 }
             }
@@ -314,7 +314,7 @@ namespace RamMyERP3.Controllers
                 success = true,
                 titre = "",
                 responseText = "Table MAJ avec succès",
-                redirect = nameof(DetailsReferenceTable)
+                redirect = ""//nameof(DetailsReferenceTable)
             });
         }
 

@@ -569,8 +569,11 @@ var default_my_data_table = {
             //this.reDrawRow(index, true);
             //e.cancelBubble = true;
             //e.stopPropagation();
+            this.saveRowEditable()
+            this.saveRowAdd()
             this.refreshData();
             this.reDraw();
+            table.makeRowEditable();
         }
         validateChanges = true;
     },
