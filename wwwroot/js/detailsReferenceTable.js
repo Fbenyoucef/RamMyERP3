@@ -1,6 +1,7 @@
 ﻿var table;
 var listrowAdd = [];
 var ix = 0;
+var originalData;
 // Ajouter une nouvelle ligne
 function makeRowAdd() {
     table.saveRowEditable();
@@ -28,6 +29,7 @@ function envoyerDonnees() {
             // Afficher une notification
             notify(titre, message, typeReponse);
             if (response.redirect != undefined && response.redirect != '') {
+                $(window).unbind('beforeunload');
                 setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName + ''; }, 3000);
             }
         });
@@ -43,8 +45,8 @@ function envoyerDonnees() {
 }
 
 function supprimerDonnees(idTodelete) {
-   
-    
+
+
     if (true) {
         $.ajax({
 
@@ -59,7 +61,8 @@ function supprimerDonnees(idTodelete) {
             // Afficher une notification
             notify(titre, message, typeReponse);
             if (response.redirect != undefined && response.redirect != '') {
-                setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName + ''; }, 3000);
+                $(window).unbind('beforeunload');
+                setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName + ''; }, 0);
             }
         });
     } else {
@@ -74,6 +77,7 @@ function supprimerDonnees(idTodelete) {
 }
 
 $(document).ready(function () {
+    originalData = listeDonnees;
     var ligneVide = {};
     var columnsPropeties = [];
     var columnsTablePropeties = [];
@@ -177,18 +181,36 @@ $(document).ready(function () {
         if (numOrString == "Autres")
             return "text-center";
     }
+    function positionIndex() {
+        for (var i = 0; i < table.columns.length; i++) {
+            if (table.columns[i].cell == "POSITION")
+                return i;
+        }
+        return 3;
+    }
     table = myDataTableFactory(config);
 
     table.fillData();
-
     table.table = $('#tableReference').DataTable({
         "data": table.initialData,
+        //"orderFixed":
+        //    [positionIndex() +2 , 'asc']
+        //,
         "columns": columnsTablePropeties,
         "columnDefs": [
             { orderable: false, className: 'reorder', targets: 0 },
             { orderable: true, targets: '_all' }
+            
         ],
-        rowReorder: true,
+        rowReorder: true
+        //,
+        //rowReorder:
+        //{
+        //    // Specifier la colonne a mettre a jours automatiquement apres le reordre
+        //    dataSrc: 'POSITION.value',
+        //    // Specifier si la valaur de la colonne doit etre mise a jours
+        //    reorderUpdate: false
+        //}
     });
     $('#tableReference').on('page.dt', function (a, b, c) {
         table.saveRowEditable();
@@ -196,6 +218,59 @@ $(document).ready(function () {
     });
 
     table.table.columns(columnsTableVisibility).visible(false);
+
+    table.table.on('row-reorder', function (e, diff) {
+        // Declarer un nouveau tableau des données
+        var newInitialData = [];
+        // Declarer un dictionnaire des proprietes
+        var dictionnaire = {};
+        // Parcourir le tableau des diffirences
+        for (var i = 0; i < diff.length; i++) {
+            // Recuperer la ligne avec l'ancienne valeur
+            var rowOld = clone(table.dataList[diff[i].oldPosition]);
+            // Recuperer la ligne avec les nouvelles valeurs
+            var rowNew = table.dataList[diff[i].newPosition];
+            // Mettre a jour la ligne
+            rowOld.POSITION.data = rowNew.POSITION.data;
+            // Remplir le dictionnaire
+            dictionnaire[diff[i].newPosition] = Object.assign({}, rowOld);
+        }
+        // Parcourir le dictionnaire
+        for (const property in dictionnaire) {
+            // Verifier si le dictionnaire a des proprietes
+            if (Object.prototype.hasOwnProperty.call(dictionnaire, property)) {
+                // Recuperer la valeur de la propriete
+                var valeur = dictionnaire[property];
+                // Mettre a jour la cellule
+                table.dataList[property] = valeur;
+                // Mettre a jour l'index de la cellule
+                table.dataList[property].metadata.index = parseInt(property);
+                // declarer un objet resultat
+                var resultat = {};
+                // Parcourir les proprietes de chaque valeur dans le dictionnaire
+                for (const prop in valeur) {
+                    // Verifier si le la valeur a des proprietes
+                    if (Object.prototype.hasOwnProperty.call(valeur, prop)) {
+                        // Si le propriete de la valeur dans le dictionnaire
+                        // est diffirente de "metadata" et "actions"
+                        if (prop !== "metadata" && prop !== "actions") {
+                            // Mettre a jour la donnée dans l'objet resultat
+                            resultat[prop] = valeur[prop].data;
+                        }
+                    }
+                }
+                // Mettre a jour les données a afficher dans le tableau
+                newInitialData.push(resultat);
+            }
+        }
+        // Actualiser les données de la table
+        table.initialData = newInitialData;
+        // Actualiser les cellules
+        table.refreshData();
+        // Redessiner la table avec les données mises a jours
+        table.reDraw();
+        table.makeRowEditable();
+    });
 
     table.reDraw();
     table.makeRowEditable();
@@ -210,4 +285,8 @@ $(document).ready(function () {
 
         notify(nFrom, nAlign, nIcons, nType, nAnimIn, nAnimOut);
     });
+    $(window).bind('beforeunload', function (e) {
+        return 'Are you sure you want to leave?';
+    });
 });
+

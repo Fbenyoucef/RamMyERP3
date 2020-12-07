@@ -42,5 +42,9 @@ namespace RamMyERP3.Models
         //[Lister(IsReadOnly = true)]
         [Display(Name = "Utilisateur Création")]
         public string UTILISATEUR_CREATION { get; set; }
+        [Display(Name = "Position")]
+        [Lister(IsReadOnly = true, Cacher = true)]
+        public int POSITION { get; set; }
+
     }
 }

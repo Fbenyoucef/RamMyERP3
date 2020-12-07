@@ -10,5 +10,6 @@ namespace RamMyERP3.Models
         public DateTime? DATE_CREATION { get; set; }
         public DateTime? DATE_MODIFICATION { get; set; }
         public string UTILISATEUR_MODIFICATION { get; set; }
+        public int POSITION { get; set; }
     }
 }

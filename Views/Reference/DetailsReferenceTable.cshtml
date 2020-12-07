@@ -11,7 +11,7 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <!-- Bar des bouttons d'enregistrement-->
-                        <Navigate-custome fonction="Lister"  breadcrumb1="Tables de références" breadcrumb2=@ViewData["displayTableName"]
+                        <Navigate-custome fonction="Lister" breadcrumb1="Tables de références" breadcrumb2=@ViewData["displayTableName"]
                                           afficher-ajax-bouton-action="true"
                                           fonction-ajouter-ajax="makeRowAdd()"
                                           fonction-enregistrer-ajax="envoyerDonnees()"></Navigate-custome>
@@ -53,6 +53,28 @@
 </div>
 
 
+<!-- Modal static-->
+<div class="modal fade" id="confirmation-Modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmation de la suppression</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h5></h5>
+                <p>Etes-vous sûr de vouloir supprimer cet élément ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default waves-effect " data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger waves-effect waves-light " id="supprimer">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Styles{
     <!--DataTable-->
     <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
@@ -69,6 +91,20 @@
     <!-- notification js -->
     <script type="text/javascript" src="~/files/assets/js/bootstrap-growl.min.js"></script>
     <script type="text/javascript">
+        $(document).ready(function () {
+            $('#confirmation-Modal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget) // Button that triggered the modal
+                var modal = $(this);
+                var prefix = button.data("prefix");
+                var index = button.data("index");
+                //modal.find("#supprimer").attr("onclick", `window.mydatatables.${prefix}.deleteRow(event, ${index})`);
+                modal.find("#supprimer").click(function () {
+                    window.mydatatables[prefix].deleteRow(event, index);
+                    modal.modal('hide');
+                });
+            })
+        });
+
         var decodeHTML = function (html) {
             var txt = document.createElement('textarea');
             txt.innerHTML = html;

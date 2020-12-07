@@ -43,7 +43,7 @@ namespace RamMyERP3.Controllers
             else
                 displayTableName = tableName;
 
-            var ListeData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
+            var ListeData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList().OrderBy(e => e.POSITION);
 
             var ListeDataLiee = new Dictionary<string, List<IReferenceTable>>();
 
@@ -212,13 +212,19 @@ namespace RamMyERP3.Controllers
                 new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" });
             List<IReferenceTable> originaleData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
 
-            //var x2 = (IEnumerable<IReferenceTable>)xx;
-
             var ids = data.Select(e => e.ID);
             var idsDB = originaleData.Select(e => e.ID);
             var idToDelete = idsDB.Except(ids);
+
+            var positionMax = data.Select(e => e.POSITION).Max();
+
             foreach (var item in data)
             {
+                if (item.POSITION == 0)
+                {
+                    positionMax++;
+                    item.POSITION = positionMax;
+                }
                 if (CompareListe(typeTable, item, originaleData))
                 {
                     DetachAllEntities(_context);
@@ -283,8 +289,8 @@ namespace RamMyERP3.Controllers
             //        _context.SaveChanges();
             //    }
             //}
-            if(idToDelete)
-            { 
+            if (idToDelete)
+            {
                 var elementToDelete = originaleData.Where(e => e.ID == id).FirstOrDefault();
                 DetachAllEntities(_context);
                 try
@@ -330,7 +336,7 @@ namespace RamMyERP3.Controllers
                 foreach (var prp in typeTable.GetProperties())
                 {
                     if (propetieLiee == prp.Name)
-                        break;
+                        continue;
                     var value1 = elementListData.GetType().GetProperty(prp.Name).GetValue(elementListData);
                     var value2 = itemOriginal.GetType().GetProperty(prp.Name).GetValue(itemOriginal);
                     if (value1 != null && !value1.Equals(value2))

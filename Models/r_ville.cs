@@ -36,5 +36,9 @@ namespace RamMyERP3.Models
         [Display(Name = "Pays")]
         [NotMapped]
         public r_pays R_PAYS { get; set; }
+        [Display(Name = "Position")]
+        [Lister(IsReadOnly = true, Cacher = true)]
+        public int POSITION { get; set; }
+
     }
 }

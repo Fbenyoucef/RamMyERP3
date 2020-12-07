@@ -26,5 +26,9 @@ namespace RamMyERP3.Models
         public DateTime? DATE_MODIFICATION { get; set; }
         [Display(Name = "Utilisateur Modification")]
         public string UTILISATEUR_MODIFICATION { get; set; }
+        [Display(Name = "Position")]
+        [Lister(IsReadOnly = true, Cacher = true)]
+        public int POSITION { get; set; }
+
     }
 }

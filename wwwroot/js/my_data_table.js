@@ -659,7 +659,7 @@ var default_my_data_table = {
             //`style="float: none; margin: 0px; color: white" title="Editer" onclick="window.mydatatables.${this.prefix}.makeRowEditable(${row.metadata.index})" > ` +
             //`<span class="icofont icofont-ui-edit"></span> </a> ` +
             `<a  class="tabledit-delete-button btn btn-danger waves-effect waves-light" style="float: none; margin: 0px; color: white;" ` +
-            `id="deleteBtn" data-id="${row.metadata.getId(row.metadata.index)}"  onclick="window.mydatatables.${this.prefix}.deleteRow(event, ${row.metadata.index})" title="Supprimer">` +
+            `id="deleteBtn" data-toggle="modal" data-target="#confirmation-Modal" data-index="${row.metadata.index}" data-prefix="${this.prefix}" data-id="${row.metadata.getId(row.metadata.index)}"  title="Supprimer">` +
             `<span class="icofont icofont-ui-delete"></span></a></div></div>`;
     },
 
@@ -669,8 +669,8 @@ var default_my_data_table = {
             //`<a class="tabledit-edit-button btn btn-primary waves-effect waves-light" ` +
             //`style="float: none; margin: 0px; color: white; background-color: #0ac282;" title="Valider" onclick="window.mydatatables.${this.prefix}.saveRowEditable(${index})" > ` +
             //`<span class="icofont icofont-ui-check"></span> </a> ` +
-            `<a  class="tabledit-delete-button btn btn-danger waves-effect waves-light alert-confirm" style="float: none; margin: 0px; color: white;" ` +
-            ` title="Supprimer" onclick="window.mydatatables.${this.prefix}.deleteRow(event, ${index})">` +
+            `<a  class="tabledit-delete-button btn btn-danger waves-effect waves-light alert-confirm" style="float: none; margin: 0px; color: white;" ` + 
+            ` title="Supprimer" data-toggle="modal" data-target="#confirmation-Modal" data-index="${index}" data-prefix="${this.prefix}">` +
             `<span class="icofont icofont-ui-delete"></span></a></div></div>`;
     },
     //<button type="button" class="btn btn-warning alert-confirm m-b-10" onclick="_gaq.push(['_trackEvent', 'example', 'try', 'alert-confirm']);">Confirm</button>
