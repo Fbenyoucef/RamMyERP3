@@ -14,7 +14,6 @@ function envoyerDonnees() {
     table.saveRowEditable();
     table.saveRowAdd();
     var result = JSON.stringify(table.getData());
-    var testt = validateChanges;
     if (validateChanges) {
         $.ajax({
 
@@ -40,13 +39,9 @@ function envoyerDonnees() {
         notify(titre1, message1, typeNotify1);
         setTimeout(3000);
     }
-
-
 }
 
 function supprimerDonnees(idTodelete) {
-
-
     if (true) {
         $.ajax({
 
@@ -180,36 +175,18 @@ $(document).ready(function () {
         if (numOrString == "Autres")
             return "text-center";
     }
-    function positionIndex() {
-        for (var i = 0; i < table.columns.length; i++) {
-            if (table.columns[i].cell == "POSITION")
-                return i;
-        }
-        return 3;
-    }
+    
     table = myDataTableFactory(config);
 
     table.fillData();
     table.table = $('#tableReference').DataTable({
         "data": table.initialData,
-        //"orderFixed":
-        //    [positionIndex() +2 , 'asc']
-        //,
         "columns": columnsTablePropeties,
         "columnDefs": [
             { orderable: false, className: 'reorder', targets: 0 },
             { orderable: true, targets: '_all' }
-            
         ],
         rowReorder: true
-        //,
-        //rowReorder:
-        //{
-        //    // Specifier la colonne a mettre a jours automatiquement apres le reordre
-        //    dataSrc: 'POSITION.value',
-        //    // Specifier si la valaur de la colonne doit etre mise a jours
-        //    reorderUpdate: false
-        //}
     });
     $('#tableReference').on('page.dt', function (a, b, c) {
         table.saveRowEditable();
@@ -264,6 +241,8 @@ $(document).ready(function () {
         }
         // Actualiser les données de la table
         table.initialData = newInitialData;
+        table.saveRowAdd();
+        table.saveRowEditable();
         // Actualiser les cellules
         table.refreshData();
         // Redessiner la table avec les données mises a jours

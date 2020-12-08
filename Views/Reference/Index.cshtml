@@ -30,26 +30,22 @@
     </div>
     <div class="col-md-12 col-xl-5 ">
         
-        <div class="card app-design border-left" style="margin-top:20px; border-left:solid">
-            
+        <div class="card app-design border-left tt" style="margin-top:20px; border-left:solid">
             <div class="card-block">
                 @foreach (var elt in Model.ReferenceTable)
                 {
-                    <div class="list-group elementList col-md-3 col-xl-5" data-idReference="@elt.Key" style="display:none;margin-left:20px">
-                        @foreach (var item in elt.Value)
-                        {
-                            <a class="list-group-item list-group-item-action" href="~/Reference/DetailsReferenceTable?tableName=@item.TableName">@item.DisplayTableName</a>
-                        }
-                    </div>
+                <div class="list-group elementList col-md-3 col-xl-5" data-idReference="@elt.Key" style="display:none;margin-left:20px">
+                    <h4 class="modal-title"> @elt.Key : </h4>
+                    @foreach (var item in elt.Value)
+                    {
+                        <a class="list-group-item list-group-item-action" href="~/Reference/DetailsReferenceTable?tableName=@item.TableName">@item.DisplayTableName</a>
+                    }
+                </div>
                 }
             </div>
-
         </div>
     </div>
 </div>
-
-
-
 
 
 @section Styles {

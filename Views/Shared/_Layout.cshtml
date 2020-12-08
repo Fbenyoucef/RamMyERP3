@@ -134,50 +134,34 @@
                                         <span class="pcoded-micon"><i class="feather icon-home"></i></span>
                                         <span class="pcoded-mtext">RAM</span>
                                     </a>
-                                    @*<ul class="pcoded-submenu">
-                                            <li class="">
-                                                <a href="~/Collaborateurs/Index">
-                                                    <span class="pcoded-mtext">Collaborateur</span>
-                                                </a>
-                                            </li>
-                                            <li class="">
-                                                <a href="~/Rams/Lister">
-                                                    <span class="pcoded-mtext">Liste des RAMS</span>
-                                                </a>
-                                            </li>
-
-                                        </ul>*@
                                 </li>
 
-                                <li class="pcoded">
-                                    <a href="~/Reference/Index">
+                                <li class="pcoded-hasmenu">
+                                    <a href=" javascript:void(0)">
                                         <span class="pcoded-micon"><i class="feather icon-settings"></i></span>
-                                        <span class="pcoded-mtext">Tables de Références</span>
+                                        <span class="pcoded-mtext">Paramètres</span>
                                     </a>
+                                    <ul class="pcoded-submenu">
+                                        <li class="active">
+                                            <a href="~/Reference/Index">
+                                                <span class="pcoded-micon"><i class="feather icon-settings"></i></span>
+                                                <span class="pcoded-mtext">Tables de Références</span>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </li>
-
-
-
                             </ul>
-
-
-
                         </div>
                     </nav>
                     <div class="pcoded-content">
                         <div class="pcoded-inner-content">
-
-
                             @RenderBody()
-
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 
     <!-- Required Jquery -->
     <script type="text/javascript" src="~/files/bower_components/jquery/js/jquery.min.js"></script>
