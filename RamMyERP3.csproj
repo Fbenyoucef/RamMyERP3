@@ -218,6 +218,9 @@
     <Content Update="wwwroot\css\ramPdf.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="wwwroot\js\detailsReferenceTable.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\PDF\my-kiwi-logo-cmjn_vert.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -2,9 +2,11 @@
 var listrowAdd = [];
 var ix = 0;
 var originalData;
+var datachanged = false;
 
 // Ajouter une nouvelle ligne
 function makeRowAdd() {
+    datachanged = true;
     table.saveRowEditable();
     table.saveRowAdd();
     table.makeRowAdd();
@@ -18,7 +20,7 @@ function envoyerDonnees() {
     if (validateChanges) {
         $.ajax({
 
-            url: "/Reference/Ajouter",
+            url: "/Reference/Enregister",
             type: 'POST',
             data: { listeData: result, tableName: tableName }
 
@@ -68,7 +70,7 @@ function supprimerDonnees(idTodelete) {
         notify(titre1, message1, typeNotify1);
         setTimeout(3000);
     }
-    
+
 }
 
 $(document).ready(function () {
@@ -121,7 +123,7 @@ $(document).ready(function () {
             if (properties[i].Visibilite) {
                 columnsTableVisibility.push(i + 2);
             }
-            ligneVide[properties[i].Nom] = properties[i].Nom === "ID" ? 0 :'';
+            ligneVide[properties[i].Nom] = properties[i].Nom === "ID" ? 0 : '';
 
             if (allLists[properties[i].Nom] == undefined) {
                 var cellulePropeties = {
@@ -191,7 +193,7 @@ $(document).ready(function () {
         if (numOrString == "Autres")
             return "text-center";
     }
-    
+
     table = myDataTableFactory(config);
 
     table.fillData();
@@ -200,7 +202,7 @@ $(document).ready(function () {
         "columns": columnsTablePropeties,
         "columnDefs": [
             { orderable: false, className: 'reorder', targets: 0 },
-            { orderable: true, targets: '_all' }
+            { orderable: false, targets: 1 },
         ],
         rowReorder: true
     });
@@ -212,6 +214,7 @@ $(document).ready(function () {
     table.table.columns(columnsTableVisibility).visible(false);
 
     table.table.on('row-reorder', function (e, diff) {
+        datachanged = true;
         // Declarer un nouveau tableau des données
         var newInitialData = [];
         // Declarer un dictionnaire des proprietes
@@ -279,8 +282,17 @@ $(document).ready(function () {
 
         notify(nFrom, nAlign, nIcons, nType, nAnimIn, nAnimOut);
     });
-    $(window).bind('beforeunload', function (e) {
-        return 'Are you sure you want to leave?';
+
+    $('#tableReference').on('input.dt', function (e) {
+        datachanged = true;
     });
+
+    $(window).bind('beforeunload', function (e) {
+        if (!datachanged)
+            $(window).unbind('beforeunload');
+        else
+            return 'Are you sure you want to leave?';
+    });
+
 });
 

@@ -223,7 +223,7 @@ namespace RamMyERP3.Controllers
         /// <param name="tableName"></param>
         /// <returns></returns>
         [HttpPost]
-        public object Ajouter(string listeData, string tableName)
+        public object Enregister(string listeData, string tableName)
         {
             try
             {
@@ -250,7 +250,7 @@ namespace RamMyERP3.Controllers
                 {
                     success = true,
                     titre = "",
-                    responseText = "Table MAJ avec succès",
+                    responseText = "Modification enregistrer avec succès",
                     redirect = nameof(DetailsReferenceTable)
                 });
             }
@@ -318,7 +318,7 @@ namespace RamMyERP3.Controllers
             {
                 success = true,
                 titre = "",
-                responseText = "Table MAJ avec succès",
+                responseText = "Elément supprimer avec succès",
                 redirect = ""//nameof(DetailsReferenceTable)
             });
         }
