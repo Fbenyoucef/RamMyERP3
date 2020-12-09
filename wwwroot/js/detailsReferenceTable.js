@@ -2,6 +2,7 @@
 var listrowAdd = [];
 var ix = 0;
 var originalData;
+
 // Ajouter une nouvelle ligne
 function makeRowAdd() {
     table.saveRowEditable();
@@ -120,7 +121,7 @@ $(document).ready(function () {
             if (properties[i].Visibilite) {
                 columnsTableVisibility.push(i + 2);
             }
-            ligneVide[properties[i]] = '';
+            ligneVide[properties[i].Nom] = properties[i].Nom === "ID" ? 0 :'';
 
             if (allLists[properties[i].Nom] == undefined) {
                 var cellulePropeties = {
@@ -152,6 +153,9 @@ $(document).ready(function () {
             var celluleTablePropeties = {
                 "title": properties[i].NomAfficher,
                 "data": properties[i].Nom + ".value",
+                "fnCreatedCell": function (nTd) {
+                    $(nTd).css('vertical-align', 'middle');
+                },
                 "className": allLists[properties[i].Nom] == undefined ? textAlign(properties[i].NumericOrString) : "text-left",
                 "defaultContent": ""
             }
@@ -165,6 +169,18 @@ $(document).ready(function () {
         emptyRow: ligneVide,
         columns: columnsPropeties,
         lists: allLists,
+        makeEmpty: function () {
+            // Recuperer le dernier index
+            var lastIndex = this.dataList.length - 1;
+            // Recuperer la valeur de la derniere position dans la table (le tableau est ordonné par position)
+            var lastPosition = this.dataList[lastIndex] != undefined ? this.dataList[lastIndex].POSITION.data + 1 : 1;
+            // Cloner la ligne vide dans un nouveau objet "newEmptyRow"
+            var newEmptyRow = Object.assign({}, this.emptyRow);
+            // Mettre a jour la position de la nouvelle ligne
+            newEmptyRow.POSITION = lastPosition;
+            // retourner la nouvelle ligne
+            return newEmptyRow;
+        }
     };
 
     function textAlign(numOrString) {

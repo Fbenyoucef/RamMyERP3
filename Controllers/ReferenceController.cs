@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyErp.MyTagHelpers;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using RamMyERP3.DataContext;
 using RamMyERP3.Helpers.Entite;
@@ -16,18 +17,21 @@ using System.Reflection;
 
 namespace RamMyERP3.Controllers
 {
+    //[Authorize]
     public class ReferenceController : Controller
     {
         private readonly MyContext _context;
+        private readonly IHttpContextAccessor _userContext;
 
         public IActionResult Index()
         {
             return View(ListTable());
         }
 
-        public ReferenceController(MyContext context)
+        public ReferenceController(MyContext context, IHttpContextAccessor userContext)
         {
-            this._context = context;
+            _context = context;
+            _userContext = userContext;
         }
         public ViewResult DetailsReferenceTable(string tableName)
         {
@@ -198,67 +202,68 @@ namespace RamMyERP3.Controllers
             }
             return reference;
         }
+
+        private void UpdateListe(IEnumerable<IReferenceTable> list)
+        {
+            DetachAllEntities(_context);
+            _context.UpdateRange(list);
+            _context.SaveChanges();
+        }
+        private void AddListe(IEnumerable<IReferenceTable> list)
+        {
+            //DetachAllEntities(_context);
+            _context.AddRange(list);
+            _context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Ajouter un nouveau enregistrement
+        /// </summary>
+        /// <param name="listeData"></param>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         [HttpPost]
         public object Ajouter(string listeData, string tableName)
         {
-            var typeTable = (from type in AppDomain.CurrentDomain.GetAssemblies()
-                        .SelectMany(assembly => assembly.GetTypes().Where(e => e.Name == tableName))
-                             where typeof(IReferenceTable).IsAssignableFrom(type)
-                             select type).FirstOrDefault();
-            var listGeneric = CreateGenericList(typeTable);
-            Type protocolType = (listGeneric.GetType());
-
-            IEnumerable<IReferenceTable> data = (IEnumerable<IReferenceTable>)JsonConvert.DeserializeObject(listeData, protocolType,
-                new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" });
-            List<IReferenceTable> originaleData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
-
-            var ids = data.Select(e => e.ID);
-            var idsDB = originaleData.Select(e => e.ID);
-            var idToDelete = idsDB.Except(ids);
-
-            var positionMax = data.Select(e => e.POSITION).Max();
-
-            foreach (var item in data)
+            try
             {
-                if (item.POSITION == 0)
+                var typeTable = (from type in AppDomain.CurrentDomain.GetAssemblies()
+                       .SelectMany(assembly => assembly.GetTypes().Where(e => e.Name == tableName))
+                                 where typeof(IReferenceTable).IsAssignableFrom(type)
+                                 select type).FirstOrDefault();
+                var listGeneric = CreateGenericList(typeTable);
+                Type protocolType = (listGeneric.GetType());
+
+                IEnumerable<IReferenceTable> data = (IEnumerable<IReferenceTable>)JsonConvert.DeserializeObject(listeData, protocolType,
+                    new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" });
+                List<IReferenceTable> originaleData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
+
+                //var userId = _userContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                //var listModifier = data.Where(d => originaleData.Any(i => i.ID == d.ID)).ToList();
+                var listModifier = data.Where(d =>  CompareListe(typeTable, d, originaleData)).ToList();
+                var listAjouter = data.Where(d => d.ID == 0).ToList();
+
+                if (listModifier != null && listModifier.Any())
+                    UpdateListe(listModifier);
+             
+                return Json(new
                 {
-                    positionMax++;
-                    item.POSITION = positionMax;
-                }
-                if (CompareListe(typeTable, item, originaleData))
-                {
-                    DetachAllEntities(_context);
-                    _context.Update(item);
-                    _context.SaveChanges();
-                }
+                    success = true,
+                    titre = "",
+                    responseText = "Table MAJ avec succès",
+                    redirect = nameof(DetailsReferenceTable)
+                });
             }
-            foreach (var item in idToDelete)
+            catch (Exception ex)
             {
-                var elementToDelete = originaleData.Where(e => e.ID == item).FirstOrDefault();
-                DetachAllEntities(_context);
-                try
+                return Json(new
                 {
-                    _context.Remove(elementToDelete);
-                    _context.SaveChanges();
-                }
-                catch (DbUpdateException ex)
-                {
-                    return Json(new
-                    {
-                        success = false,
-                        titre = tableName.ToUpper(),
-                        responseText = "Vous ne pouvez pas supprimer cette ligne!",
-                        redirect = nameof(DetailsReferenceTable)
-                    });
-                }
+                    success = false,
+                    titre = tableName.ToUpper(),
+                    responseText = ex.Message,
+                    redirect = nameof(DetailsReferenceTable)
+                });
             }
-            return Json(new
-            {
-                success = true,
-                titre = "",
-                responseText = "Table MAJ avec succès",
-                redirect = nameof(DetailsReferenceTable)
-            });
         }
 
         [HttpPost]
