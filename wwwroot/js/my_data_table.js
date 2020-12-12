@@ -199,7 +199,6 @@ var default_my_data_table = {
                                                     }
                                                 }
                                             }
-
                                             break;
                                     }
                                     this.dataList[indexElement][property].html =
@@ -222,7 +221,6 @@ var default_my_data_table = {
                         }
                     }
                     this.onPostUpdate(row, oldRow, indexElement, this);
-
                 },
                 updateDataFromInputsAfterAdd: (indexElement) => {
                     var row = this.dataList[indexElement];
@@ -262,22 +260,12 @@ var default_my_data_table = {
                                                     }
                                                 }
                                             }
-
                                             break;
                                     }
                                     this.dataList[indexElement][property].html =
                                         this.makeCellHtml(row[property], typeElement);
                                     this.dataList[indexElement][property].htmladd =
                                         this.makeCellHtmlAdd(row[property], typeElement);
-                                    //if (this.checkType(typeElement)) {
-                                    //    this.dataList[indexElement][property].html.value =
-                                    //        this.dataList[indexElement][property].html.data +
-                                    //        ` <i class="fa fa-pencil" onclick="window.mydatatables.${this.prefix
-                                    //        }.makeRowEditable(${index})"/>`;
-                                    //} else {
-                                    //    this.dataList[indexElement][property].html.value =
-                                    //        this.dataList[indexElement][property].html.data;
-                                    //}
                                     this.dataList[indexElement][property].html.value =
                                         this.dataList[indexElement][property].html.data;
                                 }
@@ -287,9 +275,7 @@ var default_my_data_table = {
                     this.onPostAdd(row, indexElement, this);
                 }
             }
-
         };
-
         for (var i = 0; i < this.columns.length; i++) {
             var col = this.columns[i];
             var column = Object.assign(this.defaultColumn, col);
@@ -307,7 +293,6 @@ var default_my_data_table = {
             column.cell = resultdata;
             column.index = index;
             column.original = data[col.cell];
-
             res[col.cell] = this.makeCell(column);
         }
         this.dataList.push(res);
@@ -339,7 +324,6 @@ var default_my_data_table = {
 
     reset: function () {
         this.globalIndex = 0;
-
         var res = [];
         var rows = table.table.rows().data();
         for (var i = 0; i < rows.length; i++) {
@@ -347,7 +331,6 @@ var default_my_data_table = {
             row.metadata.index = i;
             for (const property in row) {
                 if (property != "metadata" && property != "actions") {
-
                     var original = row[property].original;
                     var cell = row[property].data;
                     var type = row[property].properties.type;
@@ -362,23 +345,6 @@ var default_my_data_table = {
             res.push(row);
         }
         this.dataList = res;
-        //for (var i = 0; i < this.dataList.length; i++) {
-        //    var row = this.dataList[i];
-        //    row.metadata.index = i;
-        //    for (const property in row) {
-        //        if (property != "metadata" && property != "actions") {
-        //            var original = row[property].original;
-        //            var cell = row[property].data;
-        //            var type = row[property].properties.type;
-        //            row[property].properties.index = i;
-        //            var id = `${this.prefix}_${property}_${i}`;
-        //            var classes = row[property].properties.class;
-        //            var column = Object.assign(this.defaultColumn, { original: original, cell: cell, index: i, type: type, property: id, classes: classes });
-        //            row[property] = this.makeCell(column);
-        //        }
-        //    }
-        //    row.actions = this.makeButtonsCell(row);
-        //}
     },
 
     makeCell: function (arg = this.defaultColumn) {
@@ -402,7 +368,6 @@ var default_my_data_table = {
 
         obj.data = arg.cell;
         obj.original = arg.original;
-
         if (obj.properties.type == inputType.SELECT) {
             if (obj.properties.list != '') {
                 var listData = this.lists[obj.properties.list.name].data;
@@ -417,15 +382,8 @@ var default_my_data_table = {
             }
         }
 
-
         obj.html = this.makeCellHtml(obj, arg.type);
         obj.htmladd = this.makeCellHtmlAdd(obj, arg.type);
-        //if (this.checkType(arg.type)) {
-        //    obj.value = obj.data +
-        //        ` <i class="fa fa-pencil" onclick="window.mydatatables.${this.prefix}.makeRowEditable(${arg.index})"/>`;
-        //} else {
-        //    obj.value = obj.data;
-        //}
         obj.value = obj.data;
         return obj;
     },
@@ -448,8 +406,6 @@ var default_my_data_table = {
         }
     },
 
-
-
     makeEmpty: function () {
         return this.emptyRow;
     },
@@ -457,10 +413,8 @@ var default_my_data_table = {
     makeRowAdd: function () {
         if (this.adding) return;
         this.adding = true;
-
         var newRow = this.makeRow(this.makeEmpty(), this.dataList.length);
         var index = this.dataList.length - 1;
-
         for (const property in newRow) {
             if (property != "metadata") {
                 newRow[property] = this.switchToAdd(newRow, property, index);

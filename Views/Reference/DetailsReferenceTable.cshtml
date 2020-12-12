@@ -75,6 +75,26 @@
     </div>
 </div>
 
+<div class="modal fade" id="annulerModification" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Annuler modifications</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <!-- Afficher le text du formulaire -->
+            <div class="modal-body">Etes vous sûr de vouloir quitter sans valider vos modifications ?</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Annuler</button>
+                <a class="btn btn-success" id="ok" href="#">Retourner</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @section Styles{
     <!--DataTable-->
     <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
@@ -104,7 +124,7 @@
                 });
             })
         });
-
+        
         var decodeHTML = function (html) {
             var txt = document.createElement('textarea');
             txt.innerHTML = html;

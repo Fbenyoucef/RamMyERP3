@@ -64,7 +64,7 @@ namespace RamMyERP3.Helpers
             {
                 html = html +
                        // Afficher le bouton Retour
-                       "<a class=\"btn btn-mat btn-secondary\" style=\"border-radius: 5px; margin-right: 5px; ! important; width: 140px;\" href=\"../\"><i class=\"fa fa-reply\"></i>Retour</a>" +
+                       "<a class=\"btn btn-mat btn-secondary checkclose\" id=\"Retourbtn\" style=\"border-radius: 5px; margin-right: 5px; ! important; width: 140px;\" href=\"../\"><i class=\"fa fa-reply\"></i>Retour</a>" +
                        // Afficher le bouton Ajouter
                        "<a class=\"btn btn-mat btn-primary\" style=\"border-radius: 5px;color: white; width: 140px; margin-right: 5px;\" onclick=\"" + FonctionAjouterAjax + "\"><i class=\"fa fa-plus\"></i> Ajouter</a>" +
                        // Afficher le bouton Valider
@@ -76,7 +76,7 @@ namespace RamMyERP3.Helpers
             {
                 html = html +
                     // Afficher le bouton Retour
-                    "<a class=\"btn btn-mat btn-secondary\" style=\"border-radius: 5px; margin-right: 5px; ! important; width: 140px;\" href=\"Lister" + (!string.IsNullOrWhiteSpace(ParametresActionsRetour) ? "?" + ParametresActionsRetour : "") + "\"><i class=\"fa fa-reply\"></i> Retour    </a>" +
+                    "<a class=\"btn btn-mat btn-secondary checkclose\" id=\"Retourbtn\" style=\"border-radius: 5px; margin-right: 5px; ! important; width: 140px;\" href=\"Lister" + (!string.IsNullOrWhiteSpace(ParametresActionsRetour) ? "?" + ParametresActionsRetour : "") + "\"><i class=\"fa fa-reply\"></i> Retour    </a>" +
                     // Afficher le bouton Valider
                     "<button  form=\"Ajouter\" class=\"btn btn-mat btn-success\" style=\"border-radius: 5px; margin-right: 5px; width: 140px;\"  type=\"submit\"><i class=\"fa fa-save\"></i> Enregistrer</button>";
             }
@@ -86,7 +86,7 @@ namespace RamMyERP3.Helpers
             {
                 html = html +
                     // Afficher le bouton Retour
-                    $"<a class=\"btn btn-mat btn-secondary\" style=\"border-radius: 5px; margin-right: 5px; ! important; width: 140px;\" href=\"../Lister" + (!string.IsNullOrWhiteSpace(ParametresActionsRetour) ? "?" + ParametresActionsRetour : "") + "\"><i class=\"fa fa-reply\"></i> Retour</a>" +
+                    $"<a class=\"btn btn-mat btn-secondary checkclose\" id=\"Retourbtn\" style=\"border-radius: 5px; margin-right: 5px; ! important; width: 140px;\" href=\"../Lister" + (!string.IsNullOrWhiteSpace(ParametresActionsRetour) ? "?" + ParametresActionsRetour : "") + "\"><i class=\"fa fa-reply\"></i> Retour</a>" +
 
                     // Afficher le bouton Valider
                     "<button form=\"Modifier\" class=\"btn btn-mat btn-success\"  style=\"border-radius: 5px; width: 140px;\" type=\"submit\"><i class=\"fa fa-save\"></i> Enregistrer</button>";
@@ -97,7 +97,7 @@ namespace RamMyERP3.Helpers
             {
                 html = html +
                     // Afficher le bouton Retour
-                    $"<a class=\"btn btn-mat btn-secondary\"  style=\"border-radius: 5px; margin-right: 5px; width: 140px;\" href=\"../Lister" + (!string.IsNullOrWhiteSpace(ParametresActionsRetour) ? "?" + ParametresActionsRetour : "") + "\"><i class=\"fa fa-reply\"></i> Retour</a>";
+                    $"<a class=\"btn btn-mat btn-secondary checkclose\" id=\"Retourbtn\"  style=\"border-radius: 5px; margin-right: 5px; width: 140px;\" href=\"../Lister" + (!string.IsNullOrWhiteSpace(ParametresActionsRetour) ? "?" + ParametresActionsRetour : "") + "\"><i class=\"fa fa-reply\"></i> Retour</a>";
             }
 
             if (AfficherBoutonTelecharger)
@@ -117,12 +117,12 @@ namespace RamMyERP3.Helpers
                                 "<ul class=\"breadcrumb-title\">" +
                                     // Afficher le logo Accueil
                                     "<li class=\"breadcrumb-item\">" +
-                                        "<a href=\"/\"><i class=\"feather icon-home\"></i></a>" +
+                                        "<a class=\"checkclose\" href=\"/\"><i class=\"feather icon-home\"></i></a>" +
                                     "</li>" +
 
                                     // Afficher le lien parent
                                     "<li class=\"breadcrumb-item\">" +
-                                        $"<a href=\"/" + "Reference/Index" + "\">" + Breadcrumb1 + "</a>" +
+                                        $"<a class=\"checkclose\" href=\"/" + "Reference/Index" + "\">" + Breadcrumb1 + "</a>" +
                                     "</li>" +
 
                                     // Afficher le lien fils

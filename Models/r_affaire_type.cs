@@ -31,10 +31,11 @@ namespace RamMyERP3.Models
 
         //[Lister(IsReadOnly = true)]
         [Display(Name = "Utilisateur Modification")]
+        [Lister(IsReadOnly = true)]
         public string UTILISATEUR_MODIFICATION { get; set; }
 
-        //[Lister(IsReadOnly = true)]
         [Display(Name = "Utilisateur Création")]
+        [Lister(IsReadOnly = true)]
         public string UTILISATEUR_CREATION { get; set; }
 
         [Display(Name = "Position")]

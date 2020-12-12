@@ -29,6 +29,7 @@ namespace RamMyERP3.Models
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime? DATE_MODIFICATION { get; set; }
         [Display(Name = "Utilisateur Modification")]
+        [Lister(IsReadOnly = true)]
         public string UTILISATEUR_MODIFICATION { get; set; }
         [Display(Name = "Code Postal")]
         public int CODE_POSTAL { get; set; }

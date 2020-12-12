@@ -287,12 +287,24 @@ $(document).ready(function () {
         datachanged = true;
     });
 
-    $(window).bind('beforeunload', function (e) {
-        if (!datachanged)
-            $(window).unbind('beforeunload');
-        else
-            return 'Are you sure you want to leave?';
+    $('.checkclose').on('click', function (e) {
+        if (datachanged)
+        //$(window).unbind('beforeunload');
+        {
+            e.preventDefault();
+            e.stopPropagation();
+            $("#ok").attr("href", $(this).attr("href"));
+            $('#annulerModification').modal('show')
+
+        }
     });
+
+    //$(window).bind('beforeunload', function (e) {
+    //    if (!datachanged)
+    //        $(window).unbind('beforeunload');
+    //    else
+    //        return 'Are you sure you want to leave?';
+    //});
 
 });
 

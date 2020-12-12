@@ -18,8 +18,12 @@ using System.Reflection;
 namespace RamMyERP3.Controllers
 {
     //[Authorize]
+    /// <summary>
+    /// ReferenceController
+    /// </summary>
     public class ReferenceController : Controller
     {
+        ///
         private readonly MyContext _context;
         private readonly IHttpContextAccessor _userContext;
 
@@ -27,26 +31,37 @@ namespace RamMyERP3.Controllers
         {
             return View(ListTable());
         }
-
+        /// <summary>
+        /// le constructeur du ReferenceController  
+        /// </summary>
+        /// <param name="context">DbContext</param>
+        /// <param name="userContext"></param>
         public ReferenceController(MyContext context, IHttpContextAccessor userContext)
         {
             _context = context;
             _userContext = userContext;
         }
+        /// <summary>
+        /// Afficher les données d'une table de référence
+        /// </summary>
+        /// <param name="tableName">le nom de la table de référence</param>
+        /// <returns></returns>
         public ViewResult DetailsReferenceTable(string tableName)
         {
             List<ProprieteInfos> listPrpInfos = new List<ProprieteInfos>();
+            //Récupérer le Type d'une classe qui hérite de IReferenceTable
             var typeTable = (from type in AppDomain.CurrentDomain.GetAssemblies()
                         .SelectMany(assembly => assembly.GetTypes().Where(e => e.Name == tableName))
                              where typeof(IReferenceTable).IsAssignableFrom(type)
                              select type).FirstOrDefault();
             string displayTableName = string.Empty;
+            //Récupérer la fonction de cette table
             var fonction = typeTable.GetCustomAttribute(typeof(FonctionAttribute));
             if (fonction.GetType().GetProperties().Count() > 1)
                 displayTableName = fonction.GetType().GetProperties()[1].GetValue(fonction).ToString();
             else
                 displayTableName = tableName;
-
+            //Récupérer la liste des données pour cette table de référence
             var ListeData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList().OrderBy(e => e.POSITION);
 
             var ListeDataLiee = new Dictionary<string, List<IReferenceTable>>();
@@ -225,6 +240,7 @@ namespace RamMyERP3.Controllers
         [HttpPost]
         public object Enregister(string listeData, string tableName)
         {
+            string userName = string.Empty;
             try
             {
                 var typeTable = (from type in AppDomain.CurrentDomain.GetAssemblies()
@@ -238,14 +254,16 @@ namespace RamMyERP3.Controllers
                     new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" });
                 List<IReferenceTable> originaleData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
 
-                //var userId = _userContext.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                //TODO :: Youcef intégrer identity
+                // userName = _userContext.HttpContext.User.FindFirst(ClaimTypes.Name).Value;
+                userName = "y.chabane@my-kiwi.fr";
                 //var listModifier = data.Where(d => originaleData.Any(i => i.ID == d.ID)).ToList();
-                var listModifier = data.Where(d =>  CompareListe(typeTable, d, originaleData)).ToList();
+                var listModifier = data.Where(d => CompareListe(typeTable, d, originaleData)).ToList();
                 var listAjouter = data.Where(d => d.ID == 0).ToList();
 
                 if (listModifier != null && listModifier.Any())
                     UpdateListe(listModifier);
-             
+
                 return Json(new
                 {
                     success = true,
@@ -346,18 +364,27 @@ namespace RamMyERP3.Controllers
                     var value2 = itemOriginal.GetType().GetProperty(prp.Name).GetValue(itemOriginal);
                     if (value1 != null && !value1.Equals(value2))
                     {
+                        elementListData.GetType().GetProperty("UTILISATEUR_MODIFICATION").SetValue(elementListData, "y.chabane@my-kiwi.fr");
                         elementChanged = true;
                         break;
                     }
                     if (value1 == null && value2 != null)
                     {
                         elementChanged = true;
+                        elementListData.GetType().GetProperty("UTILISATEUR_MODIFICATION").SetValue(elementListData, "y.chabane@my-kiwi.fr");
                         break;
                     }
                 }
             }
             else
             {
+                var typesprp = typeTable.GetProperties();
+                var userCreation = typesprp.Where(e => e.Name == "UTILISATEUR_CREATION").FirstOrDefault();
+                if (userCreation == null)
+                    elementListData.GetType().GetProperty("UTILISATEUR_MODIFICATION").SetValue(elementListData, "y.chabane@my-kiwi.fr");
+                else
+                    elementListData.GetType().GetProperty("UTILISATEUR_CREATION").SetValue(elementListData, "y.chabane@my-kiwi.fr");
+
                 elementChanged = true;
             }
 

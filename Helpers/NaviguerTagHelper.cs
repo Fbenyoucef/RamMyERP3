@@ -107,7 +107,7 @@ namespace RamMyERP3.Helpers
                                 "<ul class=\"breadcrumb-title\">" +
                                     // Afficher le logo Accueil
                                     "<li class=\"breadcrumb-item\">" +
-                                        "<a href=\"/\"><i class=\"feather icon-home\"></i></a>" +
+                                        "<a class=\"checkclose\" href=\"/\"><i class=\"feather icon-home\"></i></a>" +
                                     "</li>" +
 
                                     // Afficher le lien parent
