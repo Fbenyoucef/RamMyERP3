@@ -53,7 +53,7 @@
 </div>
 
 
-<!-- Modal static-->
+<!-- Confirmation de la suppression-->
 <div class="modal fade" id="confirmation-Modal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -75,6 +75,7 @@
     </div>
 </div>
 
+<!-- Annuler modifications-->
 <div class="modal fade" id="annulerModification" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -98,7 +99,7 @@
 @section Styles{
     <!--DataTable-->
     <link rel="stylesheet" type="text/css" href="~/files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
-    @*<link rel="stylesheet" type="text/css" href="~/files/assets/pages/data-table/css/buttons.dataTables.min.css">*@
+    
     <!-- Notification.css -->
     <link rel="stylesheet" type="text/css" href="~/files/assets/pages/notification/notification.css">
 
@@ -117,14 +118,13 @@
                 var modal = $(this);
                 var prefix = button.data("prefix");
                 var index = button.data("index");
-                //modal.find("#supprimer").attr("onclick", `window.mydatatables.${prefix}.deleteRow(event, ${index})`);
-                modal.find("#supprimer").click(function () {
+                modal.find("#supprimer").off("click").click(function () {
                     window.mydatatables[prefix].deleteRow(event, index);
                     modal.modal('hide');
                 });
             })
         });
-        
+
         var decodeHTML = function (html) {
             var txt = document.createElement('textarea');
             txt.innerHTML = html;
@@ -137,7 +137,6 @@
         var tableName = "@ViewData["tableName"]";
         var properties = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.TypeClass)'));
         var listeTableLiee = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.ListeTablesLiees)'));
-        //var listeDonnees = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.listeValeur)'));
         var listeDonnees = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.listeValeur, new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" })'));
     </script>
     <script src="~/js/my_data_table.js"></script>

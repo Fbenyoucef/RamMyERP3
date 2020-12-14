@@ -32,7 +32,7 @@ function envoyerDonnees() {
             notify(titre, message, typeReponse);
             if (response.redirect != undefined && response.redirect != '') {
                 $(window).unbind('beforeunload');
-                setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName + ''; }, 3000);
+                setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName + ''; }, 0);
             }
         });
     } else {
@@ -60,7 +60,7 @@ function supprimerDonnees(idTodelete) {
             notify(titre, message, typeReponse);
             if (response.redirect != undefined && response.redirect != '') {
                 $(window).unbind('beforeunload');
-                setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName + ''; }, 0);
+                setTimeout(function () { window.location.href = response.redirect + '?tableName=' + tableName + ''; }, 1000);
             }
         });
     } else {
@@ -200,11 +200,13 @@ $(document).ready(function () {
     table.table = $('#tableReference').DataTable({
         "data": table.initialData,
         "columns": columnsTablePropeties,
+        rowReorder: true,
         "columnDefs": [
-            { orderable: false, className: 'reorder', targets: 0 },
-            { orderable: false, targets: 1 },
+
+            { orderable: false, targets: [0, 1] },
+            { orderable: false, targets: [0, 1]}
         ],
-        rowReorder: true
+        "order": [[3, 'asc']],
     });
     $('#tableReference').on('page.dt', function (a, b, c) {
         table.saveRowEditable();
@@ -289,7 +291,6 @@ $(document).ready(function () {
 
     $('.checkclose').on('click', function (e) {
         if (datachanged)
-        //$(window).unbind('beforeunload');
         {
             e.preventDefault();
             e.stopPropagation();
@@ -298,13 +299,5 @@ $(document).ready(function () {
 
         }
     });
-
-    //$(window).bind('beforeunload', function (e) {
-    //    if (!datachanged)
-    //        $(window).unbind('beforeunload');
-    //    else
-    //        return 'Are you sure you want to leave?';
-    //});
-
 });
 

@@ -205,15 +205,6 @@ var default_my_data_table = {
                                         this.makeCellHtml(row[property], typeElement);
                                     this.dataList[indexElement][property].htmladd =
                                         this.makeCellHtmlAdd(row[property], typeElement);
-                                    //if (this.checkType(typeElement)) {
-                                    //    this.dataList[indexElement][property].html.value =
-                                    //        this.dataList[indexElement][property].html.data +
-                                    //        ` <i class="fa fa-pencil" onclick="window.mydatatables.${this.prefix
-                                    //        }.makeRowEditable(${index})"/>`;
-                                    //} else {
-                                    //    this.dataList[indexElement][property].html.value =
-                                    //        this.dataList[indexElement][property].html.data;
-                                    //}
                                     this.dataList[indexElement][property].html.value =
                                         this.dataList[indexElement][property].html.data;
                                 }
@@ -442,14 +433,7 @@ var default_my_data_table = {
             }
             //row.metadata.inEdit = false;
             this.dataList[i] = row;
-            //this.updateRowdata(index);
-            //this.addRowData(index);
             var current = this.table.page();
-            //setTimeout(() => {
-            //    this.reset();
-            //    this.reDraw();
-            //    this.table.page(current).draw('page');
-            //}, 5);
             validateChanges = true;
         }
     },
@@ -489,12 +473,6 @@ var default_my_data_table = {
             }
             row.metadata.inEdit = false;
             this.dataList[i] = row;
-            //this.addRowData(index);
-            //this.reDraw();
-            //        this.reDrawRow(index);
-            //this.refreshData();
-            //this.reDraw();
-            //this.table.page('last').draw('page');
             validateChanges = true;
         }
     },
@@ -519,10 +497,6 @@ var default_my_data_table = {
             supprimerDonnees(row.ID.data);
             this.adding = false;
             this.dataList.splice(index, 1);
-            //this.initialData.splice(index, 1);
-            //this.reDrawRow(index, true);
-            //e.cancelBubble = true;
-            //e.stopPropagation();
             this.saveRowEditable()
             this.saveRowAdd()
             this.refreshData();
@@ -537,12 +511,6 @@ var default_my_data_table = {
             row[property].value = unescape(row[property].html);
         } else {
             var type = row[property].properties.type;
-            //if (this.checkType(type)) {
-            //    row[property].value =
-            //        unescape(row[property].data + ` <i class="fa fa-pencil" onclick="window.mydatatables.${this.prefix}.makeRowEditable(${index})"/>`);
-            //} else {
-            //    row[property].value = unescape(row[property].data);
-            //}
             row[property].value = unescape(row[property].data);
         }
         return row[property];
@@ -553,11 +521,7 @@ var default_my_data_table = {
             row[property].value = unescape(row[property].htmladd);
         } else {
             var type = row[property].properties.type;
-            //if (this.checkType(type)) {
-            //    row[property].value = unescape(row[property].data + ` <i class="fa fa-pencil" onclick="this.saveRowAdd(${index})"/>`);
-            //} else {
             row[property].value = unescape(row[property].data);
-            //}
         }
         return row[property];
     },
@@ -612,9 +576,6 @@ var default_my_data_table = {
     makeDefaultButtons: function (row) {
 
         return `<div class="tabledit-toolbar btn-toolbar" style="text-align: left;"><div class= "btn-group btn-group-sm" style="float: none; padding: 5px;">` +
-            //`<a class="tabledit-edit-button btn btn-primary waves-effect waves-light" ` +
-            //`style="float: none; margin: 0px; color: white" title="Editer" onclick="window.mydatatables.${this.prefix}.makeRowEditable(${row.metadata.index})" > ` +
-            //`<span class="icofont icofont-ui-edit"></span> </a> ` +
             `<a  class="tabledit-delete-button btn btn-danger waves-effect waves-light" style="float: none; margin: 0px; color: white;" ` +
             `id="deleteBtn" data-toggle="modal" data-target="#confirmation-Modal" data-index="${row.metadata.index}" data-prefix="${this.prefix}" data-id="${row.metadata.getId(row.metadata.index)}"  title="Supprimer">` +
             `<span class="icofont icofont-ui-delete"></span></a></div></div>`;
@@ -623,21 +584,14 @@ var default_my_data_table = {
     makeEditButtons: function (index) {
 
         return `<div class="tabledit-toolbar btn-toolbar" style="text-align: left;"><div class= "btn-group btn-group-sm" style="float: none; padding: 5px;">` +
-            //`<a class="tabledit-edit-button btn btn-primary waves-effect waves-light" ` +
-            //`style="float: none; margin: 0px; color: white; background-color: #0ac282;" title="Valider" onclick="window.mydatatables.${this.prefix}.saveRowEditable(${index})" > ` +
-            //`<span class="icofont icofont-ui-check"></span> </a> ` +
             `<a  class="tabledit-delete-button btn btn-danger waves-effect waves-light alert-confirm" style="float: none; margin: 0px; color: white;" ` + 
             ` title="Supprimer" data-toggle="modal" data-target="#confirmation-Modal" data-index="${index}" data-prefix="${this.prefix}">` +
             `<span class="icofont icofont-ui-delete"></span></a></div></div>`;
     },
-    //<button type="button" class="btn btn-warning alert-confirm m-b-10" onclick="_gaq.push(['_trackEvent', 'example', 'try', 'alert-confirm']);">Confirm</button>
 
     makeAddButtons: function (index) {
 
         return `<div class="tabledit-toolbar btn-toolbar" style="text-align: left;"><div class= "btn-group btn-group-sm" style="float: none; padding: 5px;">` +
-            //`<a class="tabledit-edit-button btn btn-primary waves-effect waves-light" ` +
-            //`style="float: none; margin: 0px; color: white" title="Valider" onclick="window.mydatatables.${this.prefix}.saveRowAdd(${index})" > ` +
-            //`<span class="icofont icofont-ui-check"></span> </a> ` +
             `<a  class="tabledit-delete-button btn btn-danger waves-effect waves-light" style="float: none; margin: 0px; color: white;" ` +
             ` title="Annuler" onclick="window.mydatatables.${this.prefix}.cancelRowAdd(${index})">` +
             `<span class="icofont icofont-ui-close"></span></a></div></div>`;
@@ -645,11 +599,11 @@ var default_my_data_table = {
     },
 
     makeInput: function (obj) {
-        return `<input class=\'${obj.properties.class}\' style=\"width: -webkit-fill-available; height: 33px;\" type=\'text' id=\'${obj.id}\' name=\'${obj.name}\' value=\'${obj.data}\'>`;
+        return `<input class=\'${obj.properties.class}\' style=\"width: -webkit-fill-available; height: 23px;\" type=\'text' id=\'${obj.id}\' name=\'${obj.name}\' value=\'${obj.data}\'>`;
     },
 
     makeInputAdd: function (obj) {
-        return `<input class=\'${obj.properties.class}\' style=\"width: -webkit-fill-available; height: 33px;\" type=\'text' id=\'${obj.idadd}\' name=\'${obj.name}\' value=\'${obj.data}\'>`;
+        return `<input class=\'${obj.properties.class}\' style=\"width: -webkit-fill-available; height: 23px;\" type=\'text' id=\'${obj.idadd}\' name=\'${obj.name}\' value=\'${obj.data}\'>`;
     },
 
     makeTextArea: function (obj) {

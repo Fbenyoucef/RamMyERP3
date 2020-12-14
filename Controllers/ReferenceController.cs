@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿/*
+ * Type de fichier  : Controllers
+ * Nom du fichier   : ReferenceController.cs
+ * Création         : 04/11/2020 - Youcef Chabane 
+ * Modification     : 01/12/2020 - Youcef Chabane rajouter la méthode Supprimer
+ */
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,13 +35,13 @@ namespace RamMyERP3.Controllers
 
         public IActionResult Index()
         {
-            return View(ListTable());
+            return View(ListerTable());
         }
         /// <summary>
         /// le constructeur du ReferenceController  
         /// </summary>
         /// <param name="context">DbContext</param>
-        /// <param name="userContext"></param>
+        /// <param name="userContext">Contient les informations de l'utilisateur connecté</param>
         public ReferenceController(MyContext context, IHttpContextAccessor userContext)
         {
             _context = context;
@@ -61,58 +67,24 @@ namespace RamMyERP3.Controllers
                 displayTableName = fonction.GetType().GetProperties()[1].GetValue(fonction).ToString();
             else
                 displayTableName = tableName;
-            //Récupérer la liste des données pour cette table de référence
+            //Récupérer la liste des données pour cette table de référence en utilisant la réflexion
             var ListeData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList().OrderBy(e => e.POSITION);
 
             var ListeDataLiee = new Dictionary<string, List<IReferenceTable>>();
-
+            //Récupérer les custom attribute de type FonctionAttribute
             var customattr = typeTable.GetCustomAttribute<FonctionAttribute>();
             if (customattr.TableLiee != null)
             {
-                var propetieLiee = typeTable.GetProperties()
-                .Where(p => p.PropertyType.IsClass == true)
-                .Where(p => p.PropertyType.Assembly.FullName == typeTable.Assembly.FullName)
-                .FirstOrDefault(p => p.Name.ToLower() == customattr.TableLiee.ToLower())?.Name;
-
+                //Récupérer le nom de la table liée
                 var idPropetieLiee = typeTable.GetProperties()
                         .FirstOrDefault(p => p.Name.ToLower() == string.Format("{0}id", customattr.TableLiee).ToLower())?.Name;
-
+                //Récupérer la liste des données pour cette table liée en utilisant la réflexion
                 if (!string.IsNullOrEmpty(idPropetieLiee))
                 {
                     ListeDataLiee.Add(idPropetieLiee, ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(customattr.TableLiee).GetValue(_context)).ToList());
                 }
             }
-
-
-            foreach (var item in ListeData)
-            {
-                foreach (var item1 in item.GetType().GetProperties())
-                {
-                    if (item1.PropertyType == typeof(DateTime?))
-                    {
-                        var attribute = item1.GetCustomAttribute<DisplayFormatAttribute>();
-                        if (attribute != null)
-                        {
-                            var value = item1.GetValue(item, null);
-                            var currentType = item1.PropertyType;
-                            var tt = string.Format(attribute.DataFormatString, value);
-                        }
-                    }
-                    //ProprieteInfos prpInfos = new ProprieteInfos();
-                    //prpInfos.Nom = item1.Name;
-                    //prpInfos.Type = item1.PropertyType;
-                    //prpInfos.NomAfficher = GetPropertyName(item1);
-                    //var testt = item1.GetCustomAttributes<ListerAttribute>().FirstOrDefault();
-                    //if (testt != null)
-                    //{
-                    //    prpInfos.Visibilite = testt.Cacher;
-                    //    prpInfos.IsReadOnly = testt.IsReadOnly;
-                    //}
-                    ////prpInfos.Originale = item;
-                    //listPrpInfos.Add(prpInfos);
-                }
-            }
-
+            //Préparer la liste des Propriétés d'un model (table de référence) avec les attributes de chaque propriété
             foreach (var item in typeTable.GetProperties())
             {
                 ProprieteInfos prpInfos = new ProprieteInfos();
@@ -120,15 +92,15 @@ namespace RamMyERP3.Controllers
                 prpInfos.Type = item.PropertyType;
                 prpInfos.NomAfficher = GetPropertyName(item);
                 prpInfos.NumericOrString = IsNumericOrStringType(item.PropertyType);
-                var testt = item.GetCustomAttributes<ListerAttribute>().FirstOrDefault();
-                if (testt != null)
+                var listerAttr = item.GetCustomAttributes<ListerAttribute>().FirstOrDefault();
+                if (listerAttr != null)
                 {
-                    prpInfos.Visibilite = testt.Cacher;
-                    prpInfos.IsReadOnly = testt.IsReadOnly;
+                    prpInfos.Visibilite = listerAttr.Cacher;
+                    prpInfos.IsReadOnly = listerAttr.IsReadOnly;
                 }
-                //prpInfos.Originale = item;
                 listPrpInfos.Add(prpInfos);
             }
+            //Préparer les données à envoyer a la vue 
             ReferenceModel referenceModel = new ReferenceModel();
             referenceModel.TypeClass = listPrpInfos;
             referenceModel.listeValeur = new List<object>(ListeData);
@@ -140,7 +112,12 @@ namespace RamMyERP3.Controllers
             // Afficher la vue
             return View(referenceModel);
         }
-        public static string IsNumericOrStringType(Type o)
+        /// <summary>
+        /// Retourner "Numeric" ou "String" tout depend le type de l'object
+        /// </summary>
+        /// <param name="o"></param>
+        /// <returns></returns>
+        private static string IsNumericOrStringType(Type o)
         {
             switch (Type.GetTypeCode(o))
             {
@@ -162,6 +139,11 @@ namespace RamMyERP3.Controllers
                     return "Autres";
             }
         }
+        /// <summary>
+        /// Récupérer le nom de la property de l'attribute "Display"
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
         private string GetPropertyName(PropertyInfo property)
         {
             var attribute = property.GetCustomAttribute<DisplayAttribute>();
@@ -170,30 +152,23 @@ namespace RamMyERP3.Controllers
             {
                 return attribute.Name;
             }
-
             return property.Name;
         }
-        private object GetPropertyDisplayFormat(PropertyInfo property, object item)
-        {
-            var attribute = property.GetCustomAttribute<DisplayFormatAttribute>();
 
-            if (attribute != null)
-            {
-                return attribute.DataFormatString;
-            }
-
-            return property.GetValue(item);
-        }
-
-        public ReferenceDomaine ListTable()
+        /// <summary>
+        /// Lister les fonctions et les tables de références de chaque fonction
+        /// </summary>
+        /// <returns></returns>
+        public ReferenceDomaine ListerTable()
         {
             ReferenceDomaine reference = new ReferenceDomaine();
-            //_referenceDomaine = new Dictionary<string, List<Type>>();
             string nomTable = string.Empty;
+            //récupérer tous les classes qui héritent de l'interface "IReferenceTable"
             var results = from type in AppDomain.CurrentDomain.GetAssemblies()
                              .SelectMany(assembly => assembly.GetTypes())
                           where typeof(IReferenceTable).IsAssignableFrom(type)
                           select type;
+            //créer des listes de tables de références pour chaque fonction
             foreach (var item in results)
             {
                 TableReferenceDTO model = new TableReferenceDTO();
@@ -218,21 +193,19 @@ namespace RamMyERP3.Controllers
             return reference;
         }
 
-        private void UpdateListe(IEnumerable<IReferenceTable> list)
+        /// <summary>
+        /// Enregistrer les données au niveau de MySql (EF) 
+        /// </summary>
+        /// <param name="list"></param>
+        private void EnregistrerDonnees(IEnumerable<IReferenceTable> list)
         {
             DetachAllEntities(_context);
             _context.UpdateRange(list);
             _context.SaveChanges();
         }
-        private void AddListe(IEnumerable<IReferenceTable> list)
-        {
-            //DetachAllEntities(_context);
-            _context.AddRange(list);
-            _context.SaveChanges();
-        }
 
         /// <summary>
-        /// Ajouter un nouveau enregistrement
+        /// Ajouter un ou plusieurs enregistrements, ou modifier les données 
         /// </summary>
         /// <param name="listeData"></param>
         /// <param name="tableName"></param>
@@ -243,27 +216,32 @@ namespace RamMyERP3.Controllers
             string userName = string.Empty;
             try
             {
+                //récupérer le Type à travers le nom de la table
                 var typeTable = (from type in AppDomain.CurrentDomain.GetAssemblies()
                        .SelectMany(assembly => assembly.GetTypes().Where(e => e.Name == tableName))
                                  where typeof(IReferenceTable).IsAssignableFrom(type)
                                  select type).FirstOrDefault();
+                //créer une liste générique de type  "typeTable"
                 var listGeneric = CreateGenericList(typeTable);
                 Type protocolType = (listGeneric.GetType());
 
+                //Désérialiser la liste des données qu'on reçoit du datatable
                 IEnumerable<IReferenceTable> data = (IEnumerable<IReferenceTable>)JsonConvert.DeserializeObject(listeData, protocolType,
                     new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" });
+                //Lister les données de la table avant la modification
                 List<IReferenceTable> originaleData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
 
                 //TODO :: Youcef intégrer identity
                 // userName = _userContext.HttpContext.User.FindFirst(ClaimTypes.Name).Value;
                 userName = "y.chabane@my-kiwi.fr";
-                //var listModifier = data.Where(d => originaleData.Any(i => i.ID == d.ID)).ToList();
-                var listModifier = data.Where(d => CompareListe(typeTable, d, originaleData)).ToList();
-                var listAjouter = data.Where(d => d.ID == 0).ToList();
 
-                if (listModifier != null && listModifier.Any())
-                    UpdateListe(listModifier);
+                //Récupérer la liste des données changées
+                var listeModifications = data.Where(d => CompareListe(typeTable, d, originaleData, userName)).ToList();
 
+                //Envoyer les données à la base de données Mysql
+                if (listeModifications != null && listeModifications.Any())
+                    EnregistrerDonnees(listeModifications);
+                //Retourner un message "succès" a la vue
                 return Json(new
                 {
                     success = true,
@@ -274,6 +252,7 @@ namespace RamMyERP3.Controllers
             }
             catch (Exception ex)
             {
+                //s'il y a des erreurs, on envoit le message d'erreur  
                 return Json(new
                 {
                     success = false,
@@ -284,38 +263,28 @@ namespace RamMyERP3.Controllers
             }
         }
 
+        /// <summary>
+        /// supprimer un enregistrement de la table "tableName"
+        /// </summary>
+        /// <param name="id">id de l'enregistrement à supprimer</param>
+        /// <param name="tableName"> le nom de la table</param>
+        /// <returns></returns>
         [HttpPost]
         public object Supprimer(int id, string tableName)
         {
-            var typeTable = (from type in AppDomain.CurrentDomain.GetAssemblies()
-                        .SelectMany(assembly => assembly.GetTypes().Where(e => e.Name == tableName))
-                             where typeof(IReferenceTable).IsAssignableFrom(type)
-                             select type).FirstOrDefault();
-            var listGeneric = CreateGenericList(typeTable);
-            Type protocolType = (listGeneric.GetType());
-
-            //IEnumerable<IReferenceTable> data = (IEnumerable<IReferenceTable>)JsonConvert.DeserializeObject(listeData, protocolType,
-            //    new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" });
+            //récupérer les données de la table "tableName"
             List<IReferenceTable> originaleData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
 
-            //var x2 = (IEnumerable<IReferenceTable>)xx;
-
-            //var ids = data.Select(e => e.ID);
             var idsDB = originaleData.Select(e => e.ID);
+            //vérifier si l'id à supprimer existe dans la liste des données
             var idToDelete = idsDB.Contains(id);
-            //foreach (var item in data)
-            //{
-            //    if (CompareListe(typeTable, item, originaleData))
-            //    {
-            //        DetachAllEntities(_context);
-            //        _context.Update(item);
-            //        _context.SaveChanges();
-            //    }
-            //}
+
             if (idToDelete)
             {
+                //récupérer l'él2ment à supprimer
                 var elementToDelete = originaleData.Where(e => e.ID == id).FirstOrDefault();
                 DetachAllEntities(_context);
+                //supprimer l'élément sélectionné
                 try
                 {
                     _context.Remove(elementToDelete);
@@ -323,6 +292,7 @@ namespace RamMyERP3.Controllers
                 }
                 catch (DbUpdateException ex)
                 {
+                    //envoyer un message d'erreur 
                     return Json(new
                     {
                         success = false,
@@ -341,14 +311,23 @@ namespace RamMyERP3.Controllers
             });
         }
 
-        private static bool CompareListe(Type typeTable, IReferenceTable elementListData, List<IReferenceTable> originaleData)
+        /// <summary>
+        /// comparer les données et renvoyer True s'il y a des changements 
+        /// </summary>
+        /// <param name="typeTable"> type de la table</param>
+        /// <param name="elementListData"> l'enregistrement à tester s'il a changé ou pas</param>
+        /// <param name="originaleData"> la liste des données avant modification</param>
+        /// <returns></returns>
+        private static bool CompareListe(Type typeTable, IReferenceTable elementListData, List<IReferenceTable> originaleData, string userName)
         {
             bool elementChanged = false;
-            string propetieLiee = string.Empty;
+            string propertieLiee = string.Empty;
+            //récupérer les attributs personnalisés de type Fonction
             var customattr = typeTable.GetCustomAttribute<FonctionAttribute>();
             if (customattr.TableLiee != null)
             {
-                propetieLiee = typeTable.GetProperties()
+                //récupérer le nom de la table liée
+                propertieLiee = typeTable.GetProperties()
                .Where(p => p.PropertyType.IsClass == true)
                .Where(p => p.PropertyType.Assembly.FullName == typeTable.Assembly.FullName)
                .FirstOrDefault(p => p.Name.ToLower() == customattr.TableLiee.ToLower())?.Name;
@@ -358,20 +337,24 @@ namespace RamMyERP3.Controllers
             {
                 foreach (var prp in typeTable.GetProperties())
                 {
-                    if (propetieLiee == prp.Name)
+                    if (propertieLiee == prp.Name)
                         continue;
+                    //récupérer la valeur de chaque propriété de l'enregistrement modifier
                     var value1 = elementListData.GetType().GetProperty(prp.Name).GetValue(elementListData);
+                    //récupérer la valeur de chaque propriété de l'enregistrement avant modification
                     var value2 = itemOriginal.GetType().GetProperty(prp.Name).GetValue(itemOriginal);
                     if (value1 != null && !value1.Equals(value2))
                     {
-                        elementListData.GetType().GetProperty("UTILISATEUR_MODIFICATION").SetValue(elementListData, "y.chabane@my-kiwi.fr");
+                        //modifier directement la valeur de"UTILISATEUR_MODIFICATION" avec les informations de l'utilisateur connecté
+                        elementListData.GetType().GetProperty("UTILISATEUR_MODIFICATION").SetValue(elementListData, userName);
                         elementChanged = true;
                         break;
                     }
                     if (value1 == null && value2 != null)
                     {
                         elementChanged = true;
-                        elementListData.GetType().GetProperty("UTILISATEUR_MODIFICATION").SetValue(elementListData, "y.chabane@my-kiwi.fr");
+                        //modifier directement la valeur de"UTILISATEUR_MODIFICATION" avec les informations de l'utilisateur connecté
+                        elementListData.GetType().GetProperty("UTILISATEUR_MODIFICATION").SetValue(elementListData, userName);
                         break;
                     }
                 }
@@ -381,9 +364,10 @@ namespace RamMyERP3.Controllers
                 var typesprp = typeTable.GetProperties();
                 var userCreation = typesprp.Where(e => e.Name == "UTILISATEUR_CREATION").FirstOrDefault();
                 if (userCreation == null)
-                    elementListData.GetType().GetProperty("UTILISATEUR_MODIFICATION").SetValue(elementListData, "y.chabane@my-kiwi.fr");
+                    elementListData.GetType().GetProperty("UTILISATEUR_MODIFICATION").SetValue(elementListData, userName);
                 else
-                    elementListData.GetType().GetProperty("UTILISATEUR_CREATION").SetValue(elementListData, "y.chabane@my-kiwi.fr");
+                    //modifier directement la valeur de"UTILISATEUR_CREATION" avec les informations de l'utilisateur connecté
+                    elementListData.GetType().GetProperty("UTILISATEUR_CREATION").SetValue(elementListData, userName);
 
                 elementChanged = true;
             }
@@ -391,7 +375,11 @@ namespace RamMyERP3.Controllers
             return elementChanged;
         }
 
-        public void DetachAllEntities(DbContext context)
+        /// <summary>
+        /// détacher les entités du DbContext pour pouvoir les modifier sans erreurs
+        /// </summary>
+        /// <param name="context"></param>
+        private void DetachAllEntities(DbContext context)
         {
             var entries = context.ChangeTracker.Entries()
                 .Where(e => e.State != EntityState.Detached)
@@ -405,7 +393,11 @@ namespace RamMyERP3.Controllers
                 }
             }
         }
-
+        /// <summary>
+        /// créer une liste générique 
+        /// </summary>
+        /// <param name="typeInList"></param>
+        /// <returns></returns>
         private IList CreateGenericList(Type typeInList)
         {
             var genericListType = typeof(List<>).MakeGenericType(new[] { typeInList });
