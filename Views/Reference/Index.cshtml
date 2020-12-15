@@ -6,7 +6,7 @@
         <div class="row" id="Domaine">
             @foreach (var elt in Model.ReferenceTable)
             {
-
+                //Afficher les fonctions
                 <div class="col-md-3 col-xl-6 domaineElement" style="margin-top:20px" data-idReference="@elt.Key">
                     <div class="testcolor">
                         <div class="card bg-c-yellow update-card">
@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="col-md-12 col-xl-5 ">
-        
+        <!-- Afficher les tables de références-->
         <div class="card app-design border-left tt" style="margin-top:20px; border-left:solid">
             <div class="card-block">
                 @foreach (var elt in Model.ReferenceTable)
