@@ -23,20 +23,25 @@ using System.Reflection;
 
 namespace RamMyERP3.Controllers
 {
-    //[Authorize]
-    /// <summary>
-    /// ReferenceController
-    /// </summary>
     public class ReferenceController : Controller
     {
-        ///
+        #region Attributs
         private readonly MyContext _context;
         private readonly IHttpContextAccessor _userContext;
+        #endregion
 
+        #region Index
+        /// <summary>
+        /// Afficher la liste des fonctions et les tables de références 
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             return View(ListerTable());
         }
+        #endregion
+
+        #region constructeur
         /// <summary>
         /// le constructeur du ReferenceController  
         /// </summary>
@@ -47,6 +52,9 @@ namespace RamMyERP3.Controllers
             _context = context;
             _userContext = userContext;
         }
+        #endregion
+
+        #region Details
         /// <summary>
         /// Afficher les données d'une table de référence
         /// </summary>
@@ -103,7 +111,7 @@ namespace RamMyERP3.Controllers
             //Préparer les données à envoyer a la vue 
             ReferenceModel referenceModel = new ReferenceModel();
             referenceModel.TypeClass = listPrpInfos;
-            referenceModel.listeValeur = new List<object>(ListeData);
+            referenceModel.ListeValeur = new List<object>(ListeData);
             referenceModel.ListeTablesLiees = ListeDataLiee;
             // Affecter le titre de la vue
             ViewData["title"] = "Home Page";
@@ -154,7 +162,9 @@ namespace RamMyERP3.Controllers
             }
             return property.Name;
         }
+        #endregion
 
+        #region ListerTable
         /// <summary>
         /// Lister les fonctions et les tables de références de chaque fonction
         /// </summary>
@@ -192,18 +202,9 @@ namespace RamMyERP3.Controllers
             }
             return reference;
         }
+        #endregion
 
-        /// <summary>
-        /// Enregistrer les données au niveau de MySql (EF) 
-        /// </summary>
-        /// <param name="list"></param>
-        private void EnregistrerDonnees(IEnumerable<IReferenceTable> list)
-        {
-            DetachAllEntities(_context);
-            _context.UpdateRange(list);
-            _context.SaveChanges();
-        }
-
+        #region Enregister
         /// <summary>
         /// Ajouter un ou plusieurs enregistrements, ou modifier les données 
         /// </summary>
@@ -264,51 +265,14 @@ namespace RamMyERP3.Controllers
         }
 
         /// <summary>
-        /// supprimer un enregistrement de la table "tableName"
+        /// Enregistrer les données au niveau de MySql (EF) 
         /// </summary>
-        /// <param name="id">id de l'enregistrement à supprimer</param>
-        /// <param name="tableName"> le nom de la table</param>
-        /// <returns></returns>
-        [HttpPost]
-        public object Supprimer(int id, string tableName)
+        /// <param name="list"></param>
+        private void EnregistrerDonnees(IEnumerable<IReferenceTable> list)
         {
-            //récupérer les données de la table "tableName"
-            List<IReferenceTable> originaleData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
-
-            var idsDB = originaleData.Select(e => e.ID);
-            //vérifier si l'id à supprimer existe dans la liste des données
-            var idToDelete = idsDB.Contains(id);
-
-            if (idToDelete)
-            {
-                //récupérer l'él2ment à supprimer
-                var elementToDelete = originaleData.Where(e => e.ID == id).FirstOrDefault();
-                DetachAllEntities(_context);
-                //supprimer l'élément sélectionné
-                try
-                {
-                    _context.Remove(elementToDelete);
-                    _context.SaveChanges();
-                }
-                catch (DbUpdateException ex)
-                {
-                    //envoyer un message d'erreur 
-                    return Json(new
-                    {
-                        success = false,
-                        titre = tableName.ToUpper(),
-                        responseText = "Vous ne pouvez pas supprimer cette ligne!",
-                        redirect = ""//nameof(DetailsReferenceTable)
-                    });
-                }
-            }
-            return Json(new
-            {
-                success = true,
-                titre = "",
-                responseText = "Elément supprimer avec succès",
-                redirect = ""//nameof(DetailsReferenceTable)
-            });
+            DetachAllEntities(_context);
+            _context.UpdateRange(list);
+            _context.SaveChanges();
         }
 
         /// <summary>
@@ -403,6 +367,57 @@ namespace RamMyERP3.Controllers
             var genericListType = typeof(List<>).MakeGenericType(new[] { typeInList });
             return (IList)Activator.CreateInstance(genericListType);
         }
+        #endregion
+
+        #region Supprimer
+        /// <summary>
+        /// supprimer un enregistrement de la table "tableName"
+        /// </summary>
+        /// <param name="id">id de l'enregistrement à supprimer</param>
+        /// <param name="tableName"> le nom de la table</param>
+        /// <returns></returns>
+        [HttpPost]
+        public object Supprimer(int id, string tableName)
+        {
+            //récupérer les données de la table "tableName"
+            List<IReferenceTable> originaleData = ((IEnumerable<IReferenceTable>)_context.GetType().GetProperty(tableName).GetValue(_context)).ToList();
+
+            var idsDB = originaleData.Select(e => e.ID);
+            //vérifier si l'id à supprimer existe dans la liste des données
+            var idToDelete = idsDB.Contains(id);
+
+            if (idToDelete)
+            {
+                //récupérer l'él2ment à supprimer
+                var elementToDelete = originaleData.Where(e => e.ID == id).FirstOrDefault();
+                DetachAllEntities(_context);
+                //supprimer l'élément sélectionné
+                try
+                {
+                    _context.Remove(elementToDelete);
+                    _context.SaveChanges();
+                }
+                catch (DbUpdateException ex)
+                {
+                    //envoyer un message d'erreur 
+                    return Json(new
+                    {
+                        success = false,
+                        titre = tableName.ToUpper(),
+                        responseText = "Vous ne pouvez pas supprimer cette ligne!",
+                        redirect = ""//nameof(DetailsReferenceTable)
+                    });
+                }
+            }
+            return Json(new
+            {
+                success = true,
+                titre = "",
+                responseText = "Elément supprimer avec succès",
+                redirect = ""//nameof(DetailsReferenceTable)
+            });
+        }
+        #endregion
     }
 }
 

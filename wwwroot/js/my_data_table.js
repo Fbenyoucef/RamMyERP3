@@ -647,7 +647,7 @@ var default_my_data_table = {
         //} catch (e) {
 
         //}
-        return `<select class=\'${obj.properties.class}\' style=\"width: -webkit-fill-available; height: 33px;\" name=\'${obj.name}\'  id=\'${obj.id}\'>${options}</select>`;
+        return `<select class=\'${obj.properties.class}\' style=\"width: -webkit-fill-available; height: 23px;\" name=\'${obj.name}\'  id=\'${obj.id}\'>${options}</select>`;
     },
 
     makeSelectAdd: function (obj) {
@@ -679,7 +679,7 @@ var default_my_data_table = {
         //} catch (e) {
 
         //}
-        return `<select class=\'${obj.properties.class}\' style=\"width: -webkit-fill-available; height: 33px;\" name=\'${obj.name}\'  id=\'${obj.idadd}\'>${options}</select>`;
+        return `<select class=\'${obj.properties.class}\' style=\"width: -webkit-fill-available; height: 23px;\" name=\'${obj.name}\'  id=\'${obj.idadd}\'>${options}</select>`;
     },
 
     makeJson: function (data, type, full, meta) {

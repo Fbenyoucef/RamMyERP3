@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace RamMyERP3.Models
 {
+    /// <summary>
+    /// table de référence r_absence_type : RH c'est la fonction 
+    /// </summary>
     [Fonction(fonction: "RH", nomTable: "Type d'absence")]
     public class r_absence_type : IReferenceTable
     {

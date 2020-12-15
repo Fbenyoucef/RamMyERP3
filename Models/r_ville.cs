@@ -14,7 +14,6 @@ namespace RamMyERP3.Models
         [Lister(Cacher = true, IsReadOnly = true)]
         public int ID { get; set; }
         [Display(Name = "Pays")]
-        //[Lister(Cacher =true)]
         public int R_PAYSID { get; set; }
         [Display(Name = "Nom")]
         public string NOM { get; set; }

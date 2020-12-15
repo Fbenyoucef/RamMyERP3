@@ -137,7 +137,7 @@
         var tableName = "@ViewData["tableName"]";
         var properties = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.TypeClass)'));
         var listeTableLiee = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.ListeTablesLiees)'));
-        var listeDonnees = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.listeValeur, new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" })'));
+        var listeDonnees = JSON.parse(decodeHTML('@JsonConvert.SerializeObject(Model.ListeValeur, new JsonSerializerSettings { DateFormatString = "dd/MM/yyyy HH:mm:ss" })'));
     </script>
     <script src="~/js/my_data_table.js"></script>
     <script src="~/js/defaultConfigDataTable.js"></script>
